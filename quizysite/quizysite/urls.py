@@ -25,5 +25,6 @@ from django.contrib import admin
 
 urlpatterns = [
     url(r"^", include("users.urls")),
+    url(r"^", include("quizyapp.urls")),
     url(r"^admin/", admin.site.urls),
 ]
