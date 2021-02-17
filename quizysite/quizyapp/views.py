@@ -31,7 +31,7 @@ def quiz(request):
             question = json_quiz['results'][0]['question']
             answers_in_choice_field_format =\
                 [(answer,answer) for answer in json_quiz['results'][0]['shuffled_answers']]
-            print(answers_in_choice_field_format)
+            #print(answers_in_choice_field_format)
             form = QuestionForm(choices=answers_in_choice_field_format, label=question)
             context={'questions': json_quiz['results'], 'form': form}
 

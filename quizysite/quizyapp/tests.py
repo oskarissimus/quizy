@@ -1,7 +1,9 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from .forms import Question
+from .question import Question, QuestionList
 import responses
+import json
+
 # Create your tests here.
 
 class ViewTests(TestCase):
@@ -37,12 +39,47 @@ class QuestionTests(TestCase):
 class QuestionListTests(TestCase):
     @responses.activate  
     def test_retreiving_data_from_opentdb_api(self):
-        
+        raw_question_list = [
+            {
+                "category": "General Knowledge",
+                "type": "boolean",
+                "difficulty": "easy",
+                "question": "The Great Wall of China is visible from the moon.",
+                "correct_answer": "False",
+                "incorrect_answers": [
+                    "True"
+                ]
+            },
+            {
+                "category": "General Knowledge",
+                "type": "boolean",
+                "difficulty": "easy",
+                "question": "A scientific study on peanuts in bars found traces of over 100 unique specimens of urine.",
+                "correct_answer": "False",
+                "incorrect_answers": [
+                    "True"
+                ]
+            },
+            {
+                "category": "General Knowledge",
+                "type": "multiple",
+                "difficulty": "easy",
+                "question": "Which country, not including Japan, has the most people of japanese decent?",
+                "correct_answer": "Brazil",
+                "incorrect_answers": [
+                    "China",
+                    "South Korea",
+                    "United States of America"
+                ]
+            }
+        ]
         responses.add(**{
         'method'         : responses.GET,
         'url'            : 'https://opentdb.com/api.php?amount=3&category=9&difficulty=easy',
-        'body'           : {"response_code":0,"results":[{"category":"General Knowledge","type":"boolean","difficulty":"easy","question":"The Great Wall of China is visible from the moon.","correct_answer":"False","incorrect_answers":["True"]},{"category":"General Knowledge","type":"boolean","difficulty":"easy","question":"A scientific study on peanuts in bars found traces of over 100 unique specimens of urine.","correct_answer":"False","incorrect_answers":["True"]},{"category":"General Knowledge","type":"multiple","difficulty":"easy","question":"Which country, not including Japan, has the most people of japanese decent?","correct_answer":"Brazil","incorrect_answers":["China","South Korea","United States of America"]}]},
+        'body'           : json.dumps({"response_code":0,"results":raw_question_list}),
         'status'         : 200,
         'content_type'   : 'application/json',
         })
-        
+        ql = QuestionList.get_raw_question_list_from_opentdb_api()
+
+        assert ql == raw_question_list
