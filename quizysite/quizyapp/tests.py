@@ -55,9 +55,8 @@ class QuestionTests(TestCase):
         assert q.correct_answer == 'odp A'
 
 class QuestionListTests(TestCase):
-    @responses.activate  
-    def test_retreiving_data_from_opentdb_api(self):
-        raw_question_list = [
+    def setUp(self) -> None:
+        self.raw_question_list = [
             {
                 "category": "General Knowledge",
                 "type": "boolean",
@@ -94,10 +93,20 @@ class QuestionListTests(TestCase):
         responses.add(**{
         'method'         : responses.GET,
         'url'            : 'https://opentdb.com/api.php?amount=3&category=9&difficulty=easy',
-        'body'           : json.dumps({"response_code":0,"results":raw_question_list}),
+        'body'           : json.dumps({"response_code":0,"results":self.raw_question_list}),
         'status'         : 200,
         'content_type'   : 'application/json',
         })
-        ql = QuestionList.get_raw_question_list_from_opentdb_api()
 
-        assert ql == raw_question_list
+        return super().setUp()
+
+    @responses.activate  
+    def test_retreiving_data_from_opentdb_api(self):
+        rql = QuestionList.get_raw_question_list_from_opentdb_api()
+        assert rql == self.raw_question_list
+
+    @responses.activate  
+    def test_constructor_from_api(self):
+        ql = QuestionList.fromopentdbapi()
+        self.assertEqual(ql[0].question_text, "The Great Wall of China is visible from the moon.")
+        self.assertEqual(ql[2].correct_answer,"Brazil")
