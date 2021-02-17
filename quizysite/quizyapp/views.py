@@ -5,6 +5,8 @@ import urllib.request
 import json
 import random
 from .forms import QuestionForm
+from .question import Question
+
 # Create your views here.
 def quiz(request):
     if request.method == 'GET':
@@ -28,12 +30,14 @@ def quiz(request):
             #print (request.session['correct_answers_for_questions'])
             question = json_quiz['results'][0]['question']
             answers_in_choice_field_format =\
-                [({question:answer},answer) for answer in json_quiz['results'][0]['shuffled_answers']]
+                [(answer,answer) for answer in json_quiz['results'][0]['shuffled_answers']]
             print(answers_in_choice_field_format)
             form = QuestionForm(choices=answers_in_choice_field_format, label=question)
             context={'questions': json_quiz['results'], 'form': form}
+
+
         return render(request,context=context,template_name='quizyapp/quiz_question.html')
 
     else:
         print(request.POST)
-        return HttpResponse(f"udzielono odpowiedzi {request.POST['answers_field']}")
+        return HttpResponse(f"udzielono odpowiedzi")

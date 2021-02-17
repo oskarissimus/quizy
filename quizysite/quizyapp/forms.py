@@ -1,11 +1,20 @@
 from django import forms
+from typing import List
+from .question import Question
 
 class QuestionForm(forms.Form):
 
     def __init__(self, choices, label, *args, **kwargs):
         super(QuestionForm, self).__init__(*args, **kwargs)
-        self.fields['answers_field'].choices = choices
-        self.fields['answers_field'].label = label
+        self.fields[label] = forms.ChoiceField(
+            widget  = forms.RadioSelect,
+            choices = choices)
 
+class MultipleQuestionsForm(forms.Form):
 
-    answers_field = forms.ChoiceField(widget=forms.RadioSelect)
+    def __init__(self, questions:List[Question], *args, **kwargs):
+        super(MultipleQuestionsForm, self).__init__(*args, **kwargs)
+        for question in questions:
+            self.fields[question.question_text] = forms.ChoiceField(
+                widget  = forms.RadioSelect,
+                choices = question.get_answers_as_choice_field_choices())
