@@ -56,7 +56,7 @@ ROOT_URLCONF = 'quizysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['quizysite/templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
