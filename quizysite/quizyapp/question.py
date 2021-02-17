@@ -14,10 +14,13 @@ class Question:
     
     @classmethod
     def fromopentdbapiformat(cls, question_json):
+        answers = [question_json['correct_answer']]
+        answers += question_json['incorrect_answers']
         return cls(
-            question_text='pytanie',
-            answers=['odp A','odp B','odp C'],
-            correct_answer='odp A')
+            question_text=question_json['question'],
+            answers=answers,
+            correct_answer=question_json['correct_answer']
+        )
 
 
     def get_answers_as_choice_field_choices(self):
@@ -45,5 +48,16 @@ class QuestionList(UserList):
         r = requests.get(url,params=params)
         return r.json()['results']
 
-    # @classmethod
-    # def fromopentdbapi(cls, )
+    @classmethod
+    def fromopentdbapi(cls, amount=3, category=9, difficulty='easy'):
+        raw_question_list = \
+            cls.get_raw_question_list_from_opentdb_api(
+                amount=amount,
+                category=category,
+                difficulty=difficulty)
+
+        l = cls()
+        for raw_question in raw_question_list:
+            l.append(Question.fromopentdbapiformat(raw_question))
+
+        return l

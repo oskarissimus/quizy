@@ -36,6 +36,24 @@ class QuestionTests(TestCase):
                 ('pytanie','odp C'),
             ] )
 
+    def test_constructor_from_opentdb_api_format(self):
+        raw_question = {
+            "category": "General Knowledge",
+            "type": "multiple",
+            "difficulty": "easy",
+            "question": "pytanie INNE",
+            "correct_answer": "odp A",
+            "incorrect_answers": [
+                "odp B",
+                "odp C"
+            ]
+        }
+        q = Question.fromopentdbapiformat(raw_question)
+        assert q.question_text  == 'pytanie INNE'
+        print(q.answers)
+        assert q.answers        == ['odp A','odp B','odp C']
+        assert q.correct_answer == 'odp A'
+
 class QuestionListTests(TestCase):
     @responses.activate  
     def test_retreiving_data_from_opentdb_api(self):
