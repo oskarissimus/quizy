@@ -31,9 +31,9 @@ class QuestionTests(TestCase):
         self.assertEqual(
             self.q.get_answers_as_choice_field_choices(),
             [
-                ('pytanie','odp A'),
-                ('pytanie','odp B'),
-                ('pytanie','odp C'),
+                ('odp A','odp A'),
+                ('odp B','odp B'),
+                ('odp C','odp C'),
             ] )
 
     def test_constructor_from_opentdb_api_format(self):

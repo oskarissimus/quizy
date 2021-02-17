@@ -26,7 +26,7 @@ class Question:
     def get_answers_as_choice_field_choices(self):
         ret = []
         for answer in self.answers:
-            ret.append((self.question_text,answer))
+            ret.append((answer,answer))
         return ret
 
 class QuestionList(UserList):
@@ -49,7 +49,7 @@ class QuestionList(UserList):
         return r.json()['results']
 
     @classmethod
-    def fromopentdbapi(cls, amount=3, category=9, difficulty='easy'):
+    def fromopentdbapi(cls, amount=3, category=9, difficulty='easy') -> List[Question]:
         raw_question_list = \
             cls.get_raw_question_list_from_opentdb_api(
                 amount=amount,
