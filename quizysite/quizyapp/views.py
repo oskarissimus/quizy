@@ -6,6 +6,7 @@ from .question import Question, QuestionList
 # Create your views here.
 def quiz(request):
     if request.method == 'GET':
+        
         question_list = QuestionList.fromopentdbapi(amount=3, category=9, difficulty='easy')
         form = MultipleQuestionsForm(question_list)
 
