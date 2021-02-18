@@ -7,11 +7,15 @@ from .question import Question, QuestionList
 def quiz(request):
     if request.method == 'GET':
         
-        question_list = QuestionList.fromopentdbapi(amount=3, category=9, difficulty='easy')
+        amount = 3 # default value
+        if 'amount' in request.GET:
+            amount = int(request.GET.get('amount'))
+
+        question_list = QuestionList.fromopentdbapi(amount=amount, category=9, difficulty='easy')
         form = MultipleQuestionsForm(question_list)
 
-        skip = True
-        if 'correct_answers_for_questions' not in request.session.keys() or skip:
+        skip_ceck = True
+        if 'correct_answers_for_questions' not in request.session.keys() or skip_ceck:
             request.session['correct_answers_for_questions'] = {}
 
         for question in question_list:

@@ -1,6 +1,6 @@
-from quizyapp.views import quiz
-from django.conf.urls import url
+from .views import quiz
+from django.urls import path
 
 urlpatterns = [
-    url(r"^quiz/", quiz, name="quiz"),
+    path("quiz/", quiz, name="quiz"),
 ]

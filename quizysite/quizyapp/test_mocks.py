@@ -38,7 +38,7 @@ raw_question_list = [
 mock_amount_2={
 'method'         : responses.GET,
 'url'            : 'https://opentdb.com/api.php?amount=2&category=9&difficulty=easy',
-'body'           : json.dumps({"response_code":0,"results":raw_question_list[:1]}),
+'body'           : json.dumps({"response_code":0,"results":raw_question_list[:2]}),
 'status'         : 200,
 'content_type'   : 'application/json',
 }
