@@ -8,7 +8,7 @@ def quiz(request):
     if request.method == 'GET':
         
         amount = 3 # default value
-        if 'amount' in request.GET:
+        if 'amount' in request.GET and request.GET.get('amount').isdigit():
             amount = int(request.GET.get('amount'))
 
         question_list = QuestionList.fromopentdbapi(amount=amount, category=9, difficulty='easy')

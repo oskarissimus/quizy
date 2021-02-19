@@ -70,6 +70,27 @@ class ViewTests(TestCase):
         self.assertContains(response, "The Great Wall of China is visible from the moon.")
         self.assertContains(response, "A scientific study on peanuts in bars found traces of over 100 unique specimens of urine.")
         self.assertNotContains(response, "Which country, not including Japan, has the most people of japanese decent?")
+
+
+
+    @responses.activate
+    def test_quiz_question_amount_is_3_when_non_int_amount_is_set(self):
+        #tak się teraz zastanawiam czy to już jest test integracyjny czy jeszcze jednostkowy?
+        responses.add(**mock_default)
+        responses.add(**mock_amount_2)
+        params = {
+            'amount':     'zxalkfh',
+            'category':   9,
+            'difficulty': 'easy'
+            }
+
+        request = self.factory.get(path=reverse('quiz'), data=params)
+        request.user = self.user
+        request.session = {}
+        response = quiz(request)
+        self.assertContains(response, "The Great Wall of China is visible from the moon.")
+        self.assertContains(response, "A scientific study on peanuts in bars found traces of over 100 unique specimens of urine.")
+        self.assertContains(response, "Which country, not including Japan, has the most people of japanese decent?")
         
 
 class QuestionTests(TestCase):
