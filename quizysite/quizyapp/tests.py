@@ -18,6 +18,9 @@ class ViewTests(TestCase):
         self.user = User.objects.create_user(
             username='oskar', email='oskar@example.com', password='top_secret')
         responses.add(**mock_category)
+        responses.add(**mock_default)
+        responses.add(**mock_amount_2)
+        responses.add(**mock_art_category)
         return super().setUp()
 
     def test_quizy_url_returns_200(self):
@@ -28,14 +31,13 @@ class ViewTests(TestCase):
 
     @responses.activate
     def test_quiz_questions_doesnt_show_for_unauthorised_user(self):
-        responses.add(**mock_default)
+
         response = self.client.get(reverse('quiz'))
         self.assertNotContains(response, 'The Great Wall of China is visible from the moon.')
 
     @responses.activate
     def test_quiz_questions_show_up_for_authorised_user(self):
         #https://docs.djangoproject.com/en/3.1/topics/testing/advanced/
-        responses.add(**mock_default)
 
         # Create an instance of a GET request.
         request = self.factory.get('/quiz')
@@ -56,8 +58,7 @@ class ViewTests(TestCase):
     @responses.activate
     def test_quiz_question_amount_is_configurable_by_get_params(self):
         #tak się teraz zastanawiam czy to już jest test integracyjny czy jeszcze jednostkowy?
-        responses.add(**mock_default)
-        responses.add(**mock_amount_2)
+
         params = {
             'amount':     2,
             'category':   9,
@@ -78,8 +79,7 @@ class ViewTests(TestCase):
     @responses.activate
     def test_quiz_question_amount_is_3_when_non_int_amount_is_set(self):
         #tak się teraz zastanawiam czy to już jest test integracyjny czy jeszcze jednostkowy?
-        responses.add(**mock_default)
-        responses.add(**mock_amount_2)
+
         params = {
             'amount':     'zxalkfh',
             'category':   9,
@@ -98,8 +98,7 @@ class ViewTests(TestCase):
     @responses.activate
     def test_quiz_question_category_is_configurable_by_get_params(self):
         #tak się teraz zastanawiam czy to już jest test integracyjny czy jeszcze jednostkowy?
-        responses.add(**mock_default)
-        responses.add(**mock_art_category)
+
         params = {
             'amount':     3,
             'category':   25,
@@ -113,6 +112,26 @@ class ViewTests(TestCase):
         self.assertContains(response, "Who painted the Sistine Chapel?")
         self.assertContains(response, "Who painted The Starry Night?")
         self.assertContains(response, "Which painting was not made by Vincent Van Gogh?")
+        
+
+
+    @responses.activate
+    def test_quiz_question_amount_is_3_when_non_int_amount_is_set(self):
+        #tak się teraz zastanawiam czy to już jest test integracyjny czy jeszcze jednostkowy?
+
+        params = {
+            'amount':     'zxalkfh',
+            'category':   9,
+            'difficulty': 'easy'
+            }
+
+        request = self.factory.get(path=reverse('quiz'), data=params)
+        request.user = self.user
+        request.session = {}
+        response = quiz(request)
+        self.assertContains(response, "The Great Wall of China is visible from the moon.")
+        self.assertContains(response, "A scientific study on peanuts in bars found traces of over 100 unique specimens of urine.")
+        self.assertContains(response, "Which country, not including Japan, has the most people of japanese decent?")
         
 
 class QuestionTests(TestCase):
