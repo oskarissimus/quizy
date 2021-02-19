@@ -34,6 +34,44 @@ raw_question_list = [
     }
 ]
 
+raw_question_list_art=[
+    {
+        "category": "Art",
+        "type": "multiple",
+        "difficulty": "easy",
+        "question": "Who painted the Sistine Chapel?",
+        "correct_answer": "Michelangelo",
+        "incorrect_answers": [
+            "Leonardo da Vinci",
+            "Pablo Picasso",
+            "Raphael"
+        ]
+    },
+    {
+        "category": "Art",
+        "type": "multiple",
+        "difficulty": "easy",
+        "question": "Who painted The Starry Night?",
+        "correct_answer": "Vincent van Gogh",
+        "incorrect_answers": [
+            "Pablo Picasso",
+            "Leonardo da Vinci",
+            "Michelangelo"
+        ]
+    },
+    {
+        "category": "Art",
+        "type": "multiple",
+        "difficulty": "easy",
+        "question": "Which painting was not made by Vincent Van Gogh?",
+        "correct_answer": "The Ninth Wave",
+        "incorrect_answers": [
+            "Caf&eacute; Terrace at Night",
+            "Bedroom In Arles",
+            "Starry Night"
+        ]
+    }
+]
 
 category_list={
     "trivia_categories": [
@@ -156,6 +194,14 @@ mock_category={
 'method'         : responses.GET,
 'url'            : 'https://opentdb.com/api_category.php',
 'body'           : json.dumps(category_list),
+'status'         : 200,
+'content_type'   : 'application/json',
+}
+
+mock_art_category={
+'method'         : responses.GET,
+'url'            : 'https://opentdb.com/api.php?amount=3&category=25&difficulty=easy',
+'body'           : json.dumps({"response_code":0,"results":raw_question_list_art}),
 'status'         : 200,
 'content_type'   : 'application/json',
 }

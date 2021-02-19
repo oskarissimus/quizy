@@ -5,7 +5,7 @@ from .question import Question, QuestionList
 import responses
 import requests
 import json
-from .test_mocks import mock_amount_2, mock_default, raw_question_list, mock_category
+from .test_mocks import mock_amount_2, mock_default, raw_question_list, mock_category, mock_art_category
 from .views import quiz
 from .category import CategoryDict
 # Create your tests here.
@@ -93,6 +93,26 @@ class ViewTests(TestCase):
         self.assertContains(response, "The Great Wall of China is visible from the moon.")
         self.assertContains(response, "A scientific study on peanuts in bars found traces of over 100 unique specimens of urine.")
         self.assertContains(response, "Which country, not including Japan, has the most people of japanese decent?")
+        
+
+    @responses.activate
+    def test_quiz_question_category_is_configurable_by_get_params(self):
+        #tak się teraz zastanawiam czy to już jest test integracyjny czy jeszcze jednostkowy?
+        responses.add(**mock_default)
+        responses.add(**mock_art_category)
+        params = {
+            'amount':     3,
+            'category':   25,
+            'difficulty': 'easy'
+            }
+
+        request = self.factory.get(path=reverse('quiz'), data=params)
+        request.user = self.user
+        request.session = {}
+        response = quiz(request)
+        self.assertContains(response, "Who painted the Sistine Chapel?")
+        self.assertContains(response, "Who painted The Starry Night?")
+        self.assertContains(response, "Which painting was not made by Vincent Van Gogh?")
         
 
 class QuestionTests(TestCase):

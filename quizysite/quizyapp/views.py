@@ -12,7 +12,11 @@ def quiz(request):
         if 'amount' in request.GET and request.GET.get('amount').isdigit():
             amount = int(request.GET.get('amount'))
 
-        question_list = QuestionList.fromopentdbapi(amount=amount, category=9, difficulty='easy')
+        category = 9 # default value
+        if 'category' in request.GET and request.GET.get('category').isdigit():
+            category = int(request.GET.get('category'))
+        
+        question_list = QuestionList.fromopentdbapi(amount=amount, category=category, difficulty='easy')
         form = MultipleQuestionsForm(question_list)
 
         skip_ceck = True
