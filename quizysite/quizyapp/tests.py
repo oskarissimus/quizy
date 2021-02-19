@@ -108,7 +108,7 @@ class QuestionTests(TestCase):
         }
         q = Question.fromopentdbapiformat(raw_question)
         assert q.question_text  == 'pytanie INNE'
-        print(q.answers)
+        #print(q.answers)
         assert q.answers        == ['odp A','odp B','odp C']
         assert q.correct_answer == 'odp A'
 
