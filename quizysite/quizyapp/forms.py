@@ -23,6 +23,6 @@ class MultipleQuestionsForm(forms.Form):
                 choices = question.get_answers_as_choice_field_choices())
 
 class QuizParamsForm(forms.Form):
-    amount = forms.IntegerField( max_value=50, min_value=1 )
+    amount = forms.IntegerField( max_value=50, min_value=1 ,initial=3)
     category = forms.ChoiceField( choices=CategoryDict.fromopentdbapi().to_choice_field_choices() )
     difficulty = forms.ChoiceField( choices=(('easy','easy'),('medium','medium'),('hard','hard')) )
