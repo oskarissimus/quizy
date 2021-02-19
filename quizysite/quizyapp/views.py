@@ -47,4 +47,8 @@ def quiz_params(request):
     elif request.method == 'POST':
         form=QuizParamsForm(request.POST)
         if form.is_valid():
-            return HttpResponseRedirect('/quiz/')
+            amount = form.cleaned_data['amount']
+            category = form.cleaned_data['category']
+            difficulty = form.cleaned_data['difficulty']
+
+            return HttpResponseRedirect(f'/quiz/?amount={amount}&category={category}&difficulty={difficulty}')
