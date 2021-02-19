@@ -1,4 +1,5 @@
 from collections import UserList
+from .category import CategoryDict
 import requests
 from typing import List
 
@@ -35,6 +36,8 @@ class QuestionList(UserList):
     def get_raw_question_list_from_opentdb_api(
         amount=3, category=9, difficulty='easy') -> List:
         
+        if category not in CategoryDict.fromopentdbapi().keys():
+            raise ValueError(f'category {category} does not exist')
 
         params = {
             'amount':     amount,

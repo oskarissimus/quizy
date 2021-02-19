@@ -1,9 +1,8 @@
 from collections import UserDict
 import requests
-from typing import List
 
 
-class CategoryList(UserDict):
+class CategoryDict(UserDict):
     @classmethod
     def fromopentdbapi(cls):
         d = cls()

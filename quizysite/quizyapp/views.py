@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.shortcuts import HttpResponse
 from .forms import MultipleQuestionsForm, QuestionForm
 from .question import Question, QuestionList
+#from .category import CategoryList
 
 # Create your views here.
 def quiz(request):

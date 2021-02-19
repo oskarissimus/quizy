@@ -7,7 +7,7 @@ import requests
 import json
 from .test_mocks import mock_amount_2, mock_default, raw_question_list, mock_category
 from .views import quiz
-from .category import CategoryList
+from .category import CategoryDict
 # Create your tests here.
 
 
@@ -17,6 +17,7 @@ class ViewTests(TestCase):
         self.factory = RequestFactory()
         self.user = User.objects.create_user(
             username='oskar', email='oskar@example.com', password='top_secret')
+        responses.add(**mock_category)
         return super().setUp()
 
     def test_quizy_url_returns_200(self):
@@ -136,26 +137,37 @@ class QuestionTests(TestCase):
 
 class QuestionListTests(TestCase):
 
-
-    @responses.activate  
-    def test_retreiving_data_from_opentdb_api(self):
+    def setUp(self) -> None:
+        responses.add(**mock_category)
         responses.add(**mock_default)
+        return super().setUp()
+
+
+    @responses.activate
+    def test_retreiving_data_from_opentdb_api(self):
         rql = QuestionList.get_raw_question_list_from_opentdb_api()
         assert rql == raw_question_list
 
+
     @responses.activate  
     def test_constructor_from_api(self):
-        responses.add(**mock_default)
         ql = QuestionList.fromopentdbapi()
         self.assertEqual(ql[0].question_text, "The Great Wall of China is visible from the moon.")
         self.assertEqual(ql[2].correct_answer,"Brazil")
 
 
+    @responses.activate
+    def test_invalid_category_before_retreiving_question_list_raises_value_error(self):
+        with self.assertRaises(ValueError):
+            QuestionList.get_raw_question_list_from_opentdb_api(category=39)
 
-class CategoryListTests(TestCase):
+
+class CategoryDictTests(TestCase):
+    def setUp(self) -> None:
+        responses.add(**mock_category)
+        return super().setUp()
 
     @responses.activate  
     def test_building_category_list_from_opentdb_api(self):
-        responses.add(**mock_category)
-        cl = CategoryList.fromopentdbapi()
+        cl = CategoryDict.fromopentdbapi()
         self.assertEqual(cl[29],'Entertainment: Comics')
