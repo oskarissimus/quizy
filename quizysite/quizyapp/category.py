@@ -10,3 +10,9 @@ class CategoryDict(UserDict):
         for c in r.json()['trivia_categories']:
             d[c['id']]=c['name']
         return d
+
+    def to_choice_field_choices(self):
+        ret = []
+        for key, value in self.items():
+            ret.append((key,value))
+        return ret

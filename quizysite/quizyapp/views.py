@@ -1,6 +1,5 @@
-from django.shortcuts import render
-from django.shortcuts import HttpResponse
-from .forms import MultipleQuestionsForm, QuestionForm
+from django.shortcuts import HttpResponse, HttpResponseRedirect, render
+from .forms import MultipleQuestionsForm, QuizParamsForm
 from .question import Question, QuestionList
 #from .category import CategoryList
 
@@ -15,7 +14,7 @@ def quiz(request):
         category = 9 # default value
         if 'category' in request.GET and request.GET.get('category').isdigit():
             category = int(request.GET.get('category'))
-        
+
         question_list = QuestionList.fromopentdbapi(amount=amount, category=category, difficulty='easy')
         form = MultipleQuestionsForm(question_list)
 
@@ -39,3 +38,13 @@ def quiz(request):
                 if provided_answers[question] == correct_answers[question]:
                     points += 1
         return HttpResponse(f"you scored {points} pts")
+
+def quiz_params(request):
+    if request.method == 'GET':
+        form=QuizParamsForm()
+        return render(request,context={'form':form},template_name='quizyapp/quiz_params.html')
+
+    elif request.method == 'POST':
+        form=QuizParamsForm(request.POST)
+        if form.is_valid():
+            return HttpResponseRedirect('/quiz/')

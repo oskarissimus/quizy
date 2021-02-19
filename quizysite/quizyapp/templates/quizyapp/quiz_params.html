@@ -1,19 +1,17 @@
-
 {% extends 'base.html' %}
 {% load bootstrap4 %}
+
 {% block content %}
-Hello, {{ user.username|default:'Guest' }}!
+
 
 <div>
     {% if user.is_authenticated %}
 
-
-    <form action="/quiz/" method="post" class="form">
+    <form action="/quiz/params/" method="post">
     {% csrf_token %}
-        {% bootstrap_form form %}
-        {% buttons submit='OK' reset="reset" %}{% endbuttons %}
+    {% bootstrap_form form %}
+        <input type="submit" value="OK">
     </form>
-
     
     <a href="{% url 'logout' %}">Logout</a>
     {% else %}

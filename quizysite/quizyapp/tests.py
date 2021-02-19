@@ -11,7 +11,7 @@ from .category import CategoryDict
 # Create your tests here.
 
 
-class ViewTests(TestCase):
+class QuizViewTests(TestCase):
     def setUp(self) -> None:
         self.client = Client()
         self.factory = RequestFactory()
@@ -116,13 +116,11 @@ class ViewTests(TestCase):
 
 
     @responses.activate
-    def test_quiz_question_amount_is_3_when_non_int_amount_is_set(self):
+    def test_quiz_question_category_is_9_when_non_int_category_is_set(self):
         #tak się teraz zastanawiam czy to już jest test integracyjny czy jeszcze jednostkowy?
 
         params = {
-            'amount':     'zxalkfh',
-            'category':   9,
-            'difficulty': 'easy'
+            'category':   'zxdfg',
             }
 
         request = self.factory.get(path=reverse('quiz'), data=params)
@@ -132,7 +130,25 @@ class ViewTests(TestCase):
         self.assertContains(response, "The Great Wall of China is visible from the moon.")
         self.assertContains(response, "A scientific study on peanuts in bars found traces of over 100 unique specimens of urine.")
         self.assertContains(response, "Which country, not including Japan, has the most people of japanese decent?")
-        
+
+class QuizParamsViewTests(TestCase):
+    def setUp(self) -> None:
+        self.client = Client()
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username='oskar', email='oskar@example.com', password='top_secret')
+        responses.add(**mock_category)
+        responses.add(**mock_default)
+        responses.add(**mock_amount_2)
+        responses.add(**mock_art_category)
+        return super().setUp()
+
+    def test_quizy_params_url_returns_200(self):
+        response = self.client.get(reverse('quiz_params'))
+        self.assertEqual(response.status_code, 200)
+
+
+
 
 class QuestionTests(TestCase):
     def setUp(self) -> None:
