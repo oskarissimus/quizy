@@ -5,8 +5,9 @@ from .question import Question, QuestionList
 import responses
 import requests
 import json
-from .test_mocks import mock_amount_2, mock_default, raw_question_list
+from .test_mocks import mock_amount_2, mock_default, raw_question_list, mock_category
 from .views import quiz
+from .category import CategoryList
 # Create your tests here.
 
 
@@ -149,3 +150,12 @@ class QuestionListTests(TestCase):
         self.assertEqual(ql[0].question_text, "The Great Wall of China is visible from the moon.")
         self.assertEqual(ql[2].correct_answer,"Brazil")
 
+
+
+class CategoryListTests(TestCase):
+
+    @responses.activate  
+    def test_building_category_list_from_opentdb_api(self):
+        responses.add(**mock_category)
+        cl = CategoryList.fromopentdbapi()
+        self.assertEqual(cl[29],'Entertainment: Comics')
