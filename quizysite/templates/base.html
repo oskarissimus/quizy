@@ -1,9 +1,10 @@
 {% load bootstrap4 %}
 {% if 'use_i18n'|bootstrap_setting %}
-    {% load i18n %}
-    {% get_current_language as LANGUAGE_CODE %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 {% endif %}
 <html lang="{{ LANGUAGE_CODE|default:'en_us' }}">
+
 <head>
 
     <!-- Required meta tags -->
@@ -18,17 +19,33 @@
 
     <!-- Bootstrap JavaScript if it is in head -->
     {% if 'javascript_in_head'|bootstrap_setting %}
-        {% bootstrap_javascript %}
+    {% bootstrap_javascript %}
     {% endif %}
 
     {% block bootstrap4_extra_head %}{% endblock %}
 
 </head>
+
 <body>
-<div class="container">
-<h1>QUIZY</h1>
-{% block content %}
-{% endblock %}
+
+
+    <nav class="navbar navbar-expand-lg navbar-dark d-flex bg-primary mb-5">
+            <a class="p-2 navbar-brand" href="/">QUIZY</a>
+            <div class="ml-auto p-2">
+                <code class="navbar-text text-white pr-3">
+                    logged user: {{ user.username }}
+                </code>
+                <a class="btn btn-outline-light" href={% url 'logout' %}>Logout</a>
+            </div>
+    </nav>
+
+
+
+    <div class="container">
+
+        {% block content %}
+        {% endblock %}
     </div>
 </body>
+
 </html>

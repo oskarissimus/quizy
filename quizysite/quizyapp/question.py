@@ -2,6 +2,8 @@ from collections import UserList
 from .category import CategoryDict
 import requests
 from typing import List
+from html import unescape
+
 
 class Question:
     '''
@@ -15,12 +17,16 @@ class Question:
     
     @classmethod
     def fromopentdbapiformat(cls, question_json):
+        
         answers = [question_json['correct_answer']]
         answers += question_json['incorrect_answers']
+        answers = [unescape(a) for a in answers]
+        question_text = unescape(question_json['question'])
+        correct_answer = unescape(question_json['correct_answer'])
         return cls(
-            question_text=question_json['question'],
+            question_text=question_text,
             answers=answers,
-            correct_answer=question_json['correct_answer']
+            correct_answer=correct_answer
         )
 
 

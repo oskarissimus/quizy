@@ -2,7 +2,7 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
 {% block content %}
-Hello, {{ user.username|default:'Guest' }}!
+
 
 <div>
     {% if user.is_authenticated %}

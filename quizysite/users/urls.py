@@ -1,9 +1,13 @@
 
 from django.conf.urls import include, url
-from users.views import dashboard, register
+from django.urls import path, reverse
+from .views import dashboard, register
+from django.views.generic import RedirectView
+
 
 urlpatterns = [
     url(r"^accounts/", include("django.contrib.auth.urls")),
-    url(r"^dashboard/", dashboard, name="dashboard"),
     url(r"^register/", register, name="register"),
+    path('dashboard/', dashboard, name="dashboard"),
+    path('', RedirectView.as_view(url='dashboard/', permanent=False) ),
 ]
