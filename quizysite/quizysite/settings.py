@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'quizyapp',
     'users',
     'bootstrap4',
+    'django_tables2',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

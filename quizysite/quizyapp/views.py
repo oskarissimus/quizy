@@ -3,6 +3,7 @@ from .forms import MultipleQuestionsForm, QuizParamsForm
 from .question import Question, QuestionList
 from django.contrib.auth.decorators import login_required
 from .models import UserPoints
+from django.views.generic import ListView
 #from .category import CategoryList
 
 # Create your views here.
@@ -68,3 +69,8 @@ def quiz_params(request):
             difficulty = form.cleaned_data['difficulty']
 
             return HttpResponseRedirect(f'/quiz/?amount={amount}&category={category}&difficulty={difficulty}')
+
+#@login_required
+class UserPointsView(ListView):
+    model = UserPoints
+    template_name = 'quizyapp/ranking.html'
