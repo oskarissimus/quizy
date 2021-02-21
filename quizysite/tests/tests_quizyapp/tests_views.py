@@ -1,15 +1,11 @@
 from django.test import TestCase, Client, RequestFactory
-from django.contrib.auth.models import AnonymousUser, User
+from django.contrib.auth.models import  User
 from django.urls import reverse
-from .question import Question, QuestionList
 import responses
-import requests
-import json
-from .test_mocks import mock_amount_2, mock_default, raw_question_list, mock_category, mock_art_category
-from .views import quiz
-from .category import CategoryDict
-# Create your tests here.
 
+from quizyapp.test_mocks import mock_amount_2, mock_default, mock_category, mock_art_category
+from quizyapp.views import quiz, quiz_params
+# Create your tests here.
 
 class QuizViewTests(TestCase):
     def setUp(self) -> None:
@@ -23,17 +19,21 @@ class QuizViewTests(TestCase):
         responses.add(**mock_art_category)
         return super().setUp()
 
-    def test_quizy_url_returns_200(self):
-        response = self.client.get(reverse('quiz'))
+    def test_quizy_url_returns_200_for_authorised_user(self):
+        request = self.factory.get(path=reverse('quiz'))
+        request.user = self.user
+        request.session = {}
+        response = quiz(request)
+
         self.assertEqual(response.status_code, 200)
             
 
 
     @responses.activate
-    def test_quiz_questions_doesnt_show_for_unauthorised_user(self):
+    def test_quizy_url_returns_302_for_unauthorised_user(self):
 
         response = self.client.get(reverse('quiz'))
-        self.assertNotContains(response, 'The Great Wall of China is visible from the moon.')
+        self.assertEqual(response.status_code, 302)
 
     @responses.activate
     def test_quiz_questions_show_up_for_authorised_user(self):
@@ -143,86 +143,10 @@ class QuizParamsViewTests(TestCase):
         responses.add(**mock_art_category)
         return super().setUp()
 
-    def test_quizy_params_url_returns_200(self):
-        response = self.client.get(reverse('quiz_params'))
+    def test_quizy_params_url_returns_200_for_authorised_user(self):
+        request = self.factory.get(path=reverse('quiz_params'))
+        request.user = self.user
+        request.session = {}
+        response = quiz_params(request)
         self.assertEqual(response.status_code, 200)
 
-
-
-
-class QuestionTests(TestCase):
-    def setUp(self) -> None:
-        self.q = Question(
-            question_text='pytanie',
-            answers=['odp A','odp B','odp C'],
-            correct_answer='odp A')
-        return super().setUp()
-
-    def test_constructor(self):
-        assert self.q.question_text  == 'pytanie'
-        assert self.q.answers        == ['odp A','odp B','odp C']
-        assert self.q.correct_answer == 'odp A'
-    
-    def test_convertion_to_form_choices(self):
-        self.assertEqual(
-            self.q.get_answers_as_choice_field_choices(),
-            [
-                ('odp A','odp A'),
-                ('odp B','odp B'),
-                ('odp C','odp C'),
-            ] )
-
-    def test_constructor_from_opentdb_api_format(self):
-        raw_question = {
-            "category": "General Knowledge",
-            "type": "multiple",
-            "difficulty": "easy",
-            "question": "pytanie INNE",
-            "correct_answer": "odp A",
-            "incorrect_answers": [
-                "odp B",
-                "odp C"
-            ]
-        }
-        q = Question.fromopentdbapiformat(raw_question)
-        assert q.question_text  == 'pytanie INNE'
-        #print(q.answers)
-        assert q.answers        == ['odp A','odp B','odp C']
-        assert q.correct_answer == 'odp A'
-
-class QuestionListTests(TestCase):
-
-    def setUp(self) -> None:
-        responses.add(**mock_category)
-        responses.add(**mock_default)
-        return super().setUp()
-
-
-    @responses.activate
-    def test_retreiving_data_from_opentdb_api(self):
-        rql = QuestionList.get_raw_question_list_from_opentdb_api()
-        assert rql == raw_question_list
-
-
-    @responses.activate  
-    def test_constructor_from_api(self):
-        ql = QuestionList.fromopentdbapi()
-        self.assertEqual(ql[0].question_text, "The Great Wall of China is visible from the moon.")
-        self.assertEqual(ql[2].correct_answer,"Brazil")
-
-
-    @responses.activate
-    def test_invalid_category_before_retreiving_question_list_raises_value_error(self):
-        with self.assertRaises(ValueError):
-            QuestionList.get_raw_question_list_from_opentdb_api(category=39)
-
-
-class CategoryDictTests(TestCase):
-    def setUp(self) -> None:
-        responses.add(**mock_category)
-        return super().setUp()
-
-    @responses.activate  
-    def test_building_category_list_from_opentdb_api(self):
-        cl = CategoryDict.fromopentdbapi()
-        self.assertEqual(cl[29],'Entertainment: Comics')

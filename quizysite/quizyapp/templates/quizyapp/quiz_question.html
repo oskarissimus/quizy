@@ -1,14 +1,12 @@
-
 {% extends 'base.html' %}
 {% load bootstrap4 %}
 {% block content %}
 
 
-<div>
-    <form action="/quiz/" method="post" class="form">
+<form action="/quiz/" method="post" class="form">
     {% csrf_token %}
-        {% bootstrap_form form %}
-        {% buttons submit='OK' reset="reset" %}{% endbuttons %}
-    </form>
-</div>
+    {% bootstrap_form form %}
+    {% buttons submit='OK' reset="reset" %}{% endbuttons %}
+</form>
+
 {% endblock %}

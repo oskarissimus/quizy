@@ -1,9 +1,11 @@
+from django.db.models import query
 from django.shortcuts import HttpResponse, HttpResponseRedirect, render
 from .forms import MultipleQuestionsForm, QuizParamsForm
 from .question import Question, QuestionList
 from django.contrib.auth.decorators import login_required
 from .models import UserPoints
 from django.views.generic import ListView
+from django.utils.decorators import method_decorator
 #from .category import CategoryList
 
 # Create your views here.
@@ -70,7 +72,9 @@ def quiz_params(request):
 
             return HttpResponseRedirect(f'/quiz/?amount={amount}&category={category}&difficulty={difficulty}')
 
-#@login_required
+@method_decorator(login_required, name='dispatch')
 class UserPointsView(ListView):
     model = UserPoints
+    ordering = ('-points')
     template_name = 'quizyapp/ranking.html'
+
