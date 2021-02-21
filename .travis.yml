@@ -5,4 +5,5 @@ python:
 install:
   - pip install -r requirements.txt
 script:
-  - python quizysite/manage.py test quizyapp
+  - cd quizysite
+  - python manage.py test
