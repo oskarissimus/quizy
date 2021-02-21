@@ -18,3 +18,5 @@ http://localhost:8000/dashboard/
 
 ## some links
 https://help.heroku.com/GDQ74SU2/django-migrations
+
+test
