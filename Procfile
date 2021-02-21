@@ -1,1 +1,1 @@
-web: gunicorn --chdir quizysite quizysite.wsgi
+web: gunicorn quizysite.wsgi
