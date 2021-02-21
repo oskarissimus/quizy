@@ -3,3 +3,5 @@ requests
 responses
 django-bootstrap4
 django-tables2
+gunicorn
+django-heroku
