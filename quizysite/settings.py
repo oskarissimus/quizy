@@ -144,6 +144,7 @@ LOGOUT_REDIRECT_URL = "dashboard"
 
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap4.html"
 #https://github.com/heroku/django-heroku/issues/39
-if 'HEROKU' in os.environ:
+
+if '/app' in os.environ['HOME']:
     import django_heroku
     django_heroku.settings(locals())
