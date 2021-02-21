@@ -1,9 +1,12 @@
 from django.shortcuts import HttpResponse, HttpResponseRedirect, render
 from .forms import MultipleQuestionsForm, QuizParamsForm
 from .question import Question, QuestionList
+from django.contrib.auth.decorators import login_required
+from .models import UserPoints
 #from .category import CategoryList
 
 # Create your views here.
+@login_required
 def quiz(request):
     if request.method == 'GET':
         
@@ -16,6 +19,7 @@ def quiz(request):
             category = int(request.GET.get('category'))
 
         question_list = QuestionList.fromopentdbapi(amount=amount, category=category, difficulty='easy')
+        question_list.shuffle_answers()
         form = MultipleQuestionsForm(question_list)
 
         skip_ceck = True
@@ -37,8 +41,20 @@ def quiz(request):
             if question in correct_answers:
                 if provided_answers[question] == correct_answers[question]:
                     points += 1
-        return HttpResponse(f"you scored {points} pts")
 
+
+        #user_points = UserPoints.objects.get(user=request.user)
+        user_points, created = UserPoints.objects.get_or_create(
+        user=request.user,
+        defaults={'points': 0})
+        user_points.points += points
+        user_points.save()
+
+
+        context={'provided_answers':provided_answers, 'correct_answers':correct_answers, 'points':points, 'total_points':user_points.points}
+        return render(request,context=context,template_name='quizyapp/correct_answers.html')
+
+@login_required
 def quiz_params(request):
     if request.method == 'GET':
         form=QuizParamsForm()

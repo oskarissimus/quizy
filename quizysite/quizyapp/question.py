@@ -3,7 +3,7 @@ from .category import CategoryDict
 import requests
 from typing import List
 from html import unescape
-
+import random
 
 class Question:
     '''
@@ -70,3 +70,6 @@ class QuestionList(UserList):
             l.append(Question.fromopentdbapiformat(raw_question))
 
         return l
+    def shuffle_answers(self):
+        for question in self.data:
+            random.shuffle(question.answers)

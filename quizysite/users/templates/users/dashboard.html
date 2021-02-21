@@ -5,6 +5,7 @@
 <h2>Dashboard</h2>
 
 <div>
-    {% bootstrap_button "Start quiz" button_type="link" href="/quiz/params" %}
+<a role="button" class="btn btn-primary" href="{% url 'quiz_params' %}">Start quiz</a>
+<a role="button" class="btn btn-primary" href="{% url 'password_reset' %}">Reset password</a>
 </div>
 {% endblock %}
