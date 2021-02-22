@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'users',
     'bootstrap4',
     'tests',
+    'rest_framework',
     'django_tables2',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -144,6 +145,15 @@ LOGOUT_REDIRECT_URL = "dashboard"
 
 DJANGO_TABLES2_TEMPLATE = "django_tables2/bootstrap4.html"
 #https://github.com/heroku/django-heroku/issues/39
+
+REST_FRAMEWORK = {
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
+
 
 if '/app' in os.environ['HOME']:
     import django_heroku

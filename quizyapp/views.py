@@ -6,7 +6,12 @@ from django.contrib.auth.decorators import login_required
 from .models import UserPoints
 from django.views.generic import ListView
 from django.utils.decorators import method_decorator
-#from .category import CategoryList
+from django.contrib.auth.models import User, Group
+from rest_framework import viewsets
+from rest_framework import permissions
+from .serializers import UserPointsSerializer, UserSerializer
+
+
 
 # Create your views here.
 @login_required
@@ -72,9 +77,28 @@ def quiz_params(request):
 
             return HttpResponseRedirect(f'/quiz/?amount={amount}&category={category}&difficulty={difficulty}')
 
-@method_decorator(login_required, name='dispatch')
+#@method_decorator(login_required, name='dispatch')
 class UserPointsView(ListView):
     model = UserPoints
     ordering = ('-points')
     template_name = 'quizyapp/ranking.html'
 
+
+class UserPointsViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    API endpoint to display ranking
+    """
+    queryset = UserPoints.objects.all()
+    serializer_class = model = UserPointsSerializer
+    permission_classes = [permissions.AllowAny]
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    API endpoint that allows users to be viewed or edited.
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]
+
+def home(request):
+    return render(request, template_name='home.html')
