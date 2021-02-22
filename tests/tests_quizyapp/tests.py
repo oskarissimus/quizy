@@ -11,14 +11,12 @@ from quizyapp.category import CategoryDict
 # Create your tests here.
 
 
-
-
 class CategoryDictTests(TestCase):
     def setUp(self) -> None:
         responses.add(**mock_category)
         return super().setUp()
 
-    @responses.activate  
+    @responses.activate
     def test_building_category_list_from_opentdb_api(self):
         cl = CategoryDict.fromopentdbapi()
-        self.assertEqual(cl[29],'Entertainment: Comics')
+        self.assertEqual(cl[29], 'Entertainment: Comics')
