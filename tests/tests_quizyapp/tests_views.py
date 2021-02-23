@@ -1,9 +1,7 @@
-from django.test import TestCase, Client, RequestFactory
+from django.test import TestCase, Client
 from django.contrib.auth.models import User
-from django.urls import reverse
 import responses
 from .test_mocks import mock_amount_2, mock_default, mock_category, mock_art_category
-from quizyapp.views import quiz_questions, quiz_params
 
 
 class QuizQuestionsViewUnauthorisedUserTests(TestCase):
