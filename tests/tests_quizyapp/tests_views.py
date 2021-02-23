@@ -156,3 +156,5 @@ class QuizParamsViewTests(TestCase):
         request.session = {}
         response = quiz_params(request)
         self.assertEqual(response.status_code, 200)
+
+# regression test to check if proper difficulty level

@@ -42,7 +42,9 @@ class QuestionList(UserList):
     def get_raw_question_list_from_opentdb_api(
         amount=3, category=9, difficulty='easy') -> List:
         
-        if category not in CategoryDict.fromopentdbapi().keys():
+        category_dict = CategoryDict.fromopentdbapi()
+
+        if category not in category_dict:
             raise ValueError(f'category {category} does not exist')
 
         params = {

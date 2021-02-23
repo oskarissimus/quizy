@@ -24,5 +24,6 @@ class MultipleQuestionsForm(forms.Form):
 
 class QuizParamsForm(forms.Form):
     amount = forms.IntegerField( max_value=50, min_value=1 ,initial=3)
-    category = forms.ChoiceField( choices=CategoryDict.fromopentdbapi().to_choice_field_choices() )
+    #https://stackoverflow.com/questions/47600089/django-choicefield-cleaned-data-gets-string-instead-of-integer
+    category = forms.TypedChoiceField( choices=CategoryDict.fromopentdbapi().to_choice_field_choices() , coerce=int)
     difficulty = forms.ChoiceField( choices=(('easy','easy'),('medium','medium'),('hard','hard')) )

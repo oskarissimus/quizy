@@ -8,6 +8,7 @@ class UserPoints(models.Model):
     points = models.IntegerField()
 
 class Category(models.Model):
+    id = models.IntegerField(unique=True, primary_key=True)
     name = models.TextField(unique=True)
 
 class Answer(models.Model):

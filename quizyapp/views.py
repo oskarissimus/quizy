@@ -10,7 +10,7 @@ from django.contrib.auth.models import User, Group
 from rest_framework import viewsets
 from rest_framework import permissions
 from .serializers import UserPointsSerializer, UserSerializer
-
+from django.http import HttpResponseBadRequest
 
 
 # Create your views here.
@@ -76,6 +76,58 @@ def quiz_params(request):
             difficulty = form.cleaned_data['difficulty']
 
             return HttpResponseRedirect(f'/quiz/?amount={amount}&category={category}&difficulty={difficulty}')
+
+#@login_required
+def quiz_params_new(request):
+    if request.method == 'GET':
+        form=QuizParamsForm()
+        return render(request,context={'form':form},template_name='quizyapp/quiz_params_new.html')
+
+#@login_required
+def quiz_new(request):
+    if request.method == 'POST':
+        params_form=QuizParamsForm(request.POST)
+        if params_form.is_valid():
+            amount = params_form.cleaned_data['amount']
+            category = params_form.cleaned_data['category']
+            difficulty = params_form.cleaned_data['difficulty']
+
+            question_list = QuestionList.fromopentdbapi(amount=amount, category=category, difficulty=difficulty)
+            question_list.shuffle_answers()
+            questions_form = MultipleQuestionsForm(question_list)
+
+            request.session['correct_answers_for_questions'] = {}
+
+            for question in question_list:
+                request.session['correct_answers_for_questions'][question.question_text] =\
+                question.correct_answer
+
+            context={'form': questions_form}
+            return render(request,context=context,template_name='quizyapp/quiz_question_new.html')
+        else:
+            return HttpResponseBadRequest('Cannot generate quiz with provided parameters')
+
+def quiz_results_new(request):
+    if request.method == 'POST':
+        provided_answers= request.POST
+        correct_answers = request.session['correct_answers_for_questions']
+        points = 0
+        for question in provided_answers.keys():
+            if question in correct_answers:
+                if provided_answers[question] == correct_answers[question]:
+                    points += 1
+
+
+        #user_points = UserPoints.objects.get(user=request.user)
+        user_points, created = UserPoints.objects.get_or_create(
+        user=request.user,
+        defaults={'points': 0})
+        user_points.points += points
+        user_points.save()
+
+
+        context={'provided_answers':provided_answers, 'correct_answers':correct_answers, 'points':points, 'total_points':user_points.points}
+        return render(request,context=context,template_name='quizyapp/quiz_results_new.html')
 
 #@method_decorator(login_required, name='dispatch')
 class UserPointsView(ListView):

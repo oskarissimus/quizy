@@ -5,7 +5,7 @@ from quizyapp.models import Question, Answer, Category
 
 class QuestionAndAnswerRelationTests(TestCase):
     def setUp(self):
-        cat = Category(name="general")
+        cat = Category(id=9, name="general")
         cat.save()
         a = Answer(text="A", is_correct=True)
         b = Answer(text="B", is_correct=False)
