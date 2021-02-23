@@ -1,12 +1,10 @@
-from django.db.models import query
-from django.shortcuts import HttpResponse, HttpResponseRedirect, render
+from django.shortcuts import render
 from .forms import MultipleQuestionsForm, QuizParamsForm
-from .question import Question, QuestionList
+from .question import QuestionList
 from django.contrib.auth.decorators import login_required
 from .models import UserPoints
 from django.views.generic import ListView
-from django.utils.decorators import method_decorator
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework import permissions
 from .serializers import UserPointsSerializer, UserSerializer
