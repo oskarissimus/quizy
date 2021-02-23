@@ -15,10 +15,11 @@ def quiz_params(request):
     if request.method == 'GET':
         form=QuizParamsForm()
         return render(request,context={'form':form},template_name='quizyapp/quiz_params.html')
+    else:
+        return HttpResponseBadRequest()
 
 @login_required
 def quiz_questions(request):
-
     if request.method == 'GET':
         params_form=QuizParamsForm(request.GET)
         if params_form.is_valid():
@@ -65,7 +66,8 @@ def quiz_results(request):
 
         context={'provided_answers':provided_answers, 'correct_answers':correct_answers, 'points':points, 'total_points':user_points.points}
         return render(request,context=context,template_name='quizyapp/quiz_results.html')
-
+    else:
+        return HttpResponseBadRequest()
 
 class UserPointsView(ListView):
     model = UserPoints
