@@ -1,4 +1,3 @@
-
 from django.test import TestCase
 from quizyapp.models import Question, Answer, Category
 

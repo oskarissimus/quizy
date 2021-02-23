@@ -3,7 +3,7 @@
 {% block content %}
 
 
-<form action="/quiz/" method="post" class="form">
+<form action="{% url 'quiz_results' %}" method="post" class="form">
     {% csrf_token %}
     {% bootstrap_form form %}
     {% buttons submit='OK' reset="reset" %}{% endbuttons %}

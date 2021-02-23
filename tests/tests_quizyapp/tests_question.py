@@ -1,7 +1,7 @@
 from django.test import TestCase
 from quizyapp.question import Question, QuestionList
 import responses
-from quizyapp.test_mocks import mock_default, raw_question_list, mock_category
+from .test_mocks import mock_default, raw_question_list, mock_category
 
 
 class QuestionTests(TestCase):

@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'quizyapp',
     'users',
     'bootstrap4',
-    'tests',
     'rest_framework',
     'django_tables2',
     'django.contrib.admin',

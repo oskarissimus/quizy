@@ -12,7 +12,4 @@ class CategoryDict(UserDict):
         return d
 
     def to_choice_field_choices(self):
-        ret = []
-        for key, value in self.items():
-            ret.append((key,value))
-        return ret
+        return list(self.items())
