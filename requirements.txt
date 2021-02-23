@@ -6,3 +6,4 @@ django-tables2
 gunicorn
 django-heroku
 djangorestframework
+coverage
