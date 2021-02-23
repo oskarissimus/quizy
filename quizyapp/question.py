@@ -4,8 +4,9 @@ import requests
 from typing import List
 from html import unescape
 import random
+import json
 
-class Question:
+class Question():
     '''
     helper class to easier build MultipleQuestionsForm
     '''
@@ -29,12 +30,26 @@ class Question:
             correct_answer=correct_answer
         )
 
+    @classmethod
+    def from_dict(cls, question_dict):
+        
+        answers = question_dict['answers']
+        question_text = question_dict['question_text']
+        correct_answer = question_dict['correct_answer']
+        return cls(
+            question_text=question_text,
+            answers=answers,
+            correct_answer=correct_answer
+        )
 
     def get_answers_as_choice_field_choices(self):
         ret = []
         for answer in self.answers:
             ret.append((answer,answer))
         return ret
+
+    def to_dict(self):
+        return self.__dict__
 
 class QuestionList(UserList):
 
@@ -75,3 +90,14 @@ class QuestionList(UserList):
     def shuffle_answers(self):
         for question in self.data:
             random.shuffle(question.answers)
+    
+    def to_json(self):
+        json.dumps([question.to_dict() for question in self.data])
+
+    @classmethod
+    def from_json(cls, json_str):
+        question_dict_list = json.loads(json_str)
+        l = cls()
+        for question_dict in question_dict_list:
+            l.append(Question.from_dict(question_dict))
+        return l

@@ -34,7 +34,7 @@ def quiz_questions(request):
         questions_form = MultipleQuestionsForm(question_list)
 
         request.session['correct_answers_for_questions'] = {}
-
+        request.session['question_list'] = question_list.to_json()
         for question in question_list:
             request.session['correct_answers_for_questions'][question.question_text] =\
             question.correct_answer

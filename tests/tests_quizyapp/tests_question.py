@@ -1,8 +1,8 @@
 from django.test import TestCase
 from quizyapp.question import Question, QuestionList
+import json
+from .test_mocks import mock_default, mock_category, raw_question_list
 import responses
-from .test_mocks import mock_default, raw_question_list, mock_category
-
 
 class QuestionTests(TestCase):
     def setUp(self) -> None:
@@ -10,6 +10,8 @@ class QuestionTests(TestCase):
             question_text='pytanie',
             answers=['odp A', 'odp B', 'odp C'],
             correct_answer='odp A')
+
+        self.q_dict = {'question_text': 'pytanie', 'answers': ['odp A', 'odp B', 'odp C'], 'correct_answer': 'odp A'}
         return super().setUp()
 
     def test_constructor(self):
@@ -39,11 +41,18 @@ class QuestionTests(TestCase):
             ]
         }
         q = Question.fromopentdbapiformat(raw_question)
-        assert q.question_text == 'pytanie INNE'
-        # print(q.answers)
-        assert q.answers == ['odp A', 'odp B', 'odp C']
-        assert q.correct_answer == 'odp A'
+        self.assertEqual(q.question_text , 'pytanie INNE')
+        self.assertEqual(q.answers, ['odp A', 'odp B', 'odp C'])
+        self.assertEqual(q.correct_answer, 'odp A')
 
+    def test_to_dict(self):
+        self.assertEqual(self.q.to_dict(),self.q_dict)
+
+    def test_from_dict(self):
+        q = Question.from_dict(self.q_dict)
+        self.assertEqual(q.question_text , 'pytanie')
+        self.assertEqual(q.answers, ['odp A', 'odp B', 'odp C'])
+        self.assertEqual(q.correct_answer, 'odp A')
 
 class QuestionListTests(TestCase):
 
@@ -55,7 +64,7 @@ class QuestionListTests(TestCase):
     @responses.activate
     def test_retreiving_data_from_opentdb_api(self):
         rql = QuestionList.get_raw_question_list_from_opentdb_api()
-        assert rql == raw_question_list
+        self.assertEqual(rql, raw_question_list)
 
     @responses.activate
     def test_constructor_from_api(self):
