@@ -77,3 +77,25 @@ class QuestionListTests(TestCase):
     def test_invalid_category_before_retreiving_question_list_raises_value_error(self):
         with self.assertRaises(ValueError):
             QuestionList.get_raw_question_list_from_opentdb_api(category=39)
+
+    @responses.activate
+    def test_to_json(self):
+        ql = QuestionList.fromopentdbapi()
+        ql2 = json.loads(ql.to_json())
+        self.assertEqual(ql2[0]['question_text'], "The Great Wall of China is visible from the moon.")
+        self.assertEqual(ql2[2]['correct_answer'], "Brazil")
+
+    def test_from_json(self):
+        question_list_json = '''[{
+            "question_text": "some question",
+            "answers": ["A", "B", "C"],
+            "correct_answer": "A"
+        }, {
+            "question_text": "some another question",
+            "answers": ["A", "B", "C"],
+            "correct_answer": "B"
+        }]'''
+        q = QuestionList.from_json(question_list_json)
+        self.assertEqual(q[0].question_text , 'some question')
+        self.assertEqual(q[1].answers, ['A', 'B', 'C'])
+        self.assertEqual(q[1].correct_answer, 'B')

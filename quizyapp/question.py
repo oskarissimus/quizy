@@ -62,14 +62,8 @@ class QuestionList(UserList):
         if category not in category_dict:
             raise ValueError(f'category {category} does not exist')
 
-        params = {
-            'amount':     amount,
-            'category':   category,
-            'difficulty': difficulty
-            }
-
+        params = {'amount': amount, 'category': category, 'difficulty': difficulty}
         url    = 'https://opentdb.com/api.php'
-        
         
         r = requests.get(url,params=params)
         return r.json()['results']
@@ -92,7 +86,7 @@ class QuestionList(UserList):
             random.shuffle(question.answers)
     
     def to_json(self):
-        json.dumps([question.to_dict() for question in self.data])
+        return json.dumps([question.to_dict() for question in self.data])
 
     @classmethod
     def from_json(cls, json_str):
