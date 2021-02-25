@@ -47,13 +47,24 @@ def quiz_questions(request):
 @login_required
 def quiz_results(request):
     if request.method == 'POST':
-        provided_answers= request.POST
-        correct_answers = request.session['correct_answers_for_questions']
+
+        question_list = QuestionList.from_json(request.session['question_list'])
+        received_form = MultipleQuestionsForm(question_list, request.POST)
+
+        provided_answers = {}
+        correct_answers = {}
         points = 0
-        for question in provided_answers.keys():
-            if question in correct_answers:
-                if provided_answers[question] == correct_answers[question]:
+        if received_form.is_valid():
+            for question in question_list:
+                q_txt = question.question_text
+                provided_answers[q_txt] = received_form.cleaned_data[q_txt]
+                correct_answers[q_txt] = question.correct_answer
+                if provided_answers[q_txt] == correct_answers[q_txt]:
                     points += 1
+        else:
+            return HttpResponseBadRequest()
+
+
 
 
         #user_points = UserPoints.objects.get(user=request.user)
@@ -64,7 +75,12 @@ def quiz_results(request):
         user_points.save()
 
 
-        context={'provided_answers':provided_answers, 'correct_answers':correct_answers, 'points':points, 'total_points':user_points.points}
+        context={
+            'provided_answers': provided_answers,
+            'correct_answers': correct_answers,
+            'points': points,
+            'total_points': user_points.points,
+            }
         return render(request,context=context,template_name='quizyapp/quiz_results.html')
     else:
         return HttpResponseBadRequest()
