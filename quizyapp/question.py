@@ -79,8 +79,8 @@ class QuestionList(UserList):
         l = cls()
         for raw_question in raw_question_list:
             l.append(Question.fromopentdbapiformat(raw_question))
-
         return l
+        
     def shuffle_answers(self):
         for question in self.data:
             random.shuffle(question.answers)

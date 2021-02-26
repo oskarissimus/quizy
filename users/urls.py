@@ -1,12 +1,12 @@
 
-from django.conf.urls import include, url
-from django.urls import path, reverse
+from django.conf.urls import include
+from django.urls import path
 from .views import dashboard, register
 
 
 
 urlpatterns = [
-    url(r"^accounts/", include("django.contrib.auth.urls")),
-    url(r"^register/", register, name="register"),
+    path('accounts/', include("django.contrib.auth.urls")),
+    path('register/', register, name="register"),
     path('dashboard/', dashboard, name="dashboard"),
 ]

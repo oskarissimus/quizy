@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .forms import MultipleQuestionsForm, QuizParamsForm
 from .question import QuestionList
 from django.contrib.auth.decorators import login_required
-from .models import UserPoints
+from .models import Answer, Question, UserPoints, UserAnswer
 from django.views.generic import ListView
 from django.contrib.auth.models import User
 from rest_framework import viewsets
@@ -29,15 +29,16 @@ def quiz_questions(request):
         else:
             return HttpResponseBadRequest('Cannot generate quiz with provided parameters')
 
-        question_list = QuestionList.fromopentdbapi(amount=amount, category=category, difficulty=difficulty)
-        question_list.shuffle_answers()
-        questions_form = MultipleQuestionsForm(question_list)
 
-        request.session['correct_answers_for_questions'] = {}
-        request.session['question_list'] = question_list.to_json()
-        for question in question_list:
-            request.session['correct_answers_for_questions'][question.question_text] =\
-            question.correct_answer
+
+        raw_question_list = QuestionList.get_raw_question_list_from_opentdb_api(amount=amount, category=category, difficulty=difficulty)
+        question_id_list = []
+        for question in raw_question_list:
+            question_id_list.append(Question.fromopentdbapiformat(question).id)
+        print (question_id_list)
+        questions_form = MultipleQuestionsForm(question_id_list=question_id_list)
+
+        request.session['question_id_list'] = question_id_list
 
         context={'form': questions_form}
         return render(request,context=context,template_name='quizyapp/quiz_questions.html')
@@ -48,38 +49,36 @@ def quiz_questions(request):
 def quiz_results(request):
     if request.method == 'POST':
 
-        question_list = QuestionList.from_json(request.session['question_list'])
-        received_form = MultipleQuestionsForm(question_list, request.POST)
+        question_id_list = request.session['question_id_list']
+        received_form = MultipleQuestionsForm(question_id_list, request.POST)
 
         provided_answers = {}
         correct_answers = {}
+        quiz_summary = []
         points = 0
         if received_form.is_valid():
-            for question in question_list:
-                q_txt = question.question_text
-                provided_answers[q_txt] = received_form.cleaned_data[q_txt]
-                correct_answers[q_txt] = question.correct_answer
-                if provided_answers[q_txt] == correct_answers[q_txt]:
+            for question_id, answer_id in received_form.cleaned_data.items():
+                #print(question_id, answer_id)
+                answer = Answer.objects.get(id=answer_id)
+                if answer.is_correct:
                     points += 1
+                question = Question.objects.get(id=question_id)
+                quiz_summary.append({
+                    'question': question.text,
+                    'provided_answer': answer.text,
+                    'correct_answer': question.answers.get(is_correct=True).text,
+                    'is_correct': answer.is_correct
+                    })
+                UserAnswer.objects.create(user=request.user, question=question, answer=answer)
         else:
             return HttpResponseBadRequest()
-
-
-
-
-        #user_points = UserPoints.objects.get(user=request.user)
-        user_points, created = UserPoints.objects.get_or_create(
-        user=request.user,
-        defaults={'points': 0})
-        user_points.points += points
-        user_points.save()
-
-
+        total_points = UserAnswer.get_points_for_user(request.user)
         context={
             'provided_answers': provided_answers,
             'correct_answers': correct_answers,
             'points': points,
-            'total_points': user_points.points,
+            'total_points': total_points,
+            'quiz_summary': quiz_summary
             }
         return render(request,context=context,template_name='quizyapp/quiz_results.html')
     else:
@@ -101,7 +100,7 @@ class UserPointsViewSet(viewsets.ReadOnlyModelViewSet):
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    API endpoint that allows users to be viewed or edited.
+    API endpoint that allows users to be viewed
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
