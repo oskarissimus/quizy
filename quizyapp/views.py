@@ -2,11 +2,10 @@ from django.shortcuts import render
 from .forms import MultipleQuestionsForm, QuizParamsForm
 from .question import QuestionList
 from django.contrib.auth.decorators import login_required
-from .models import Answer, Question, UserPoints, UserAnswer
-from django.contrib.auth.models import User
-from rest_framework import viewsets
-from rest_framework import permissions
-from .serializers import UserPointsSerializer, UserSerializer
+from .models import Answer, Question, UserAnswer
+from rest_framework.decorators import api_view
+from rest_framework import response
+from .serializers import RankingSerializer
 from django.http import HttpResponseBadRequest
 from django.db.models import Count
 from .tables import UserAnswerTable
@@ -84,7 +83,7 @@ def quiz_results(request):
         return HttpResponseBadRequest()
 
 
-def user_points(request):
+def ranking(request):
     queryset = UserAnswer.objects.filter(answer__is_correct=True).values('user__username').annotate(points=Count('user__username')).order_by('-points')
     table = UserAnswerTable(queryset)
 
@@ -92,22 +91,11 @@ def user_points(request):
         "table": table
     })
 
-
-class UserPointsViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    API endpoint to display ranking
-    """
-    queryset = UserPoints.objects.all()
-    serializer_class = model = UserPointsSerializer
-    permission_classes = [permissions.AllowAny]
-
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    API endpoint that allows users to be viewed
-    """
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = [permissions.AllowAny]
+@api_view(['GET'])
+def api_ranking(request):
+    queryset = UserAnswer.objects.filter(answer__is_correct=True).values('user__username').annotate(points=Count('user__username')).order_by('-points')
+    serializer = RankingSerializer(queryset, many=True)
+    return response(serializer.data)
 
 def home(request):
     return render(request, template_name='home.html')
