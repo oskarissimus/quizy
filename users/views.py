@@ -1,25 +1,28 @@
 from django.contrib.auth import login
-from django.http.response import HttpResponseBadRequest
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.views.decorators.http import require_http_methods
+
 from .forms import CustomUserCreationForm
-from django.contrib.auth.decorators import login_required
+
 
 @login_required
 def dashboard(request):
     return render(request, "users/dashboard.html")
 
 
+@require_http_methods(["GET", "POST"])
 def register(request):
     if request.method == "GET":
         if request.user.is_authenticated:
-            return HttpResponseBadRequest('cannot register while being logged in')
+            return redirect(reverse("dashboard"))
         else:
             return render(
                 request, "users/register.html",
                 {"form": CustomUserCreationForm}
             )
-            
+
     elif request.method == "POST":
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -27,6 +30,5 @@ def register(request):
             login(request, user)
             return redirect(reverse("dashboard"))
         else:
-            return HttpResponseBadRequest()
-    else:
-        return HttpResponseBadRequest()
+            return redirect(reverse("register"))
+

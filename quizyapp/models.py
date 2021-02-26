@@ -1,35 +1,19 @@
-from django.db import models
-from django.contrib.auth.models import User
 from hashlib import md5
 from html import unescape
-from django.db.models.fields.related import ForeignKey
-import requests
 
-class UserPoints(models.Model):
-    user = models.ForeignKey(User, on_delete=models.PROTECT) 
-    points = models.IntegerField()
+import requests
+from django.contrib.auth.models import User
+from django.db import models
+from django.db.models.fields.related import ForeignKey
+
 
 class Category(models.Model):
     id = models.IntegerField(unique=True, primary_key=True)
     name = models.TextField(unique=True)
 
-    @staticmethod
-    def init_category_list_from_api_if_none_available():
-        if not Category.objects.all().count():
-            category_dict = Category.get_category_dict_from_opentdb_api()
-            for id, name in category_dict.items():
-                Category.objects.create(id=id, name=name)
-
-    @staticmethod
-    def get_category_dict_from_opentdb_api():
-        d = {}
-        r = requests.get('https://opentdb.com/api_category.php')
-        for c in r.json()['trivia_categories']:
-            d[c['id']]=c['name']
-        return d
-
     def __str__(self):
         return f'id: {self.id}, name: {self.name}'
+
 
 class Answer(models.Model):
     id = models.CharField(max_length=32, unique=True, primary_key=True)
@@ -37,11 +21,13 @@ class Answer(models.Model):
     is_correct = models.BooleanField()
 
     def save(self, **kwargs):
-        self.id = md5(''.join([self.text, str(self.is_correct)]).encode('utf-8')).hexdigest()
+        self.id = md5(''.join([self.text, str(self.is_correct)]).encode(
+            'utf-8')).hexdigest()
         super().save(**kwargs)
 
     def __str__(self):
         return f'id: {self.id}, text: {self.text}, is_correct: {self.is_correct}'
+
 
 class Question(models.Model):
     id = models.CharField(max_length=32, unique=True, primary_key=True)
@@ -49,38 +35,41 @@ class Question(models.Model):
     text = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
 
-    Difficulty = models.TextChoices('Difficulty','easy medium hard')
+    Difficulty = models.TextChoices('Difficulty', 'easy medium hard')
     difficulty = models.TextField(choices=Difficulty.choices)
 
     def save(self, **kwargs):
-        self.id = md5(''.join([self.text, self.category.name, self.difficulty]).encode('utf-8')).hexdigest()
+        self.id = md5(''.join([self.text, self.category.name, self.difficulty]).encode(
+            'utf-8')).hexdigest()
         super().save(**kwargs)
 
     @classmethod
     def fromopentdbapiformat(cls, question_json):
 
-        Category.init_category_list_from_api_if_none_available()
         category = Category.objects.get(name=question_json['category'])
 
-        correct_answer = Answer(text=unescape(question_json['correct_answer']), is_correct=True)
+        correct_answer = Answer(text=unescape(
+            question_json['correct_answer']), is_correct=True)
         correct_answer.save()
         incorrect_answers = []
         for incorrect_answer_text in question_json['incorrect_answers']:
-            incorrect_answer = Answer(text=unescape(incorrect_answer_text), is_correct=False)
+            incorrect_answer = Answer(text=unescape(
+                incorrect_answer_text), is_correct=False)
             incorrect_answer.save()
             incorrect_answers.append(incorrect_answer)
 
         c = cls(
-            text = unescape(question_json['question']),
-            category = category,
-            difficulty = question_json['difficulty']
+            text=unescape(question_json['question']),
+            category=category,
+            difficulty=question_json['difficulty']
         )
         c.save()
         c.answers.add(correct_answer, *incorrect_answers)
         return c
 
     def get_answers_as_choice_field_choices(self):
-        return [(a.id,a.text) for a in self.answers.all()]
+        return [(a.id, a.text) for a in self.answers.all()]
+
 
 class UserAnswer(models.Model):
     user = ForeignKey(User, on_delete=models.PROTECT)

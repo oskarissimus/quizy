@@ -14,9 +14,9 @@ class MultipleQuestionsForm(forms.Form):
 
 
 class QuizParamsForm(forms.Form):
-    amount = forms.IntegerField( max_value=50, min_value=1 ,initial=3)
-    #https://stackoverflow.com/questions/47600089/django-choicefield-cleaned-data-gets-string-instead-of-integer
-    Category.init_category_list_from_api_if_none_available()
-    choices = [(c.id,c.name) for c in Category.objects.all()]
-    category = forms.TypedChoiceField(choices=choices, coerce=int)
-    difficulty = forms.ChoiceField(choices=Question.Difficulty.choices)
+    def __init__(self, choices:List, *args, **kwargs):
+        super(QuizParamsForm, self).__init__(*args, **kwargs)
+        self.fields['amount'] = forms.IntegerField( max_value=50, min_value=1 ,initial=3)
+        #https://stackoverflow.com/questions/47600089/django-choicefield-cleaned-data-gets-string-instead-of-integer
+        self.fields['category'] = forms.TypedChoiceField(choices=choices, coerce=int)
+        self.fields['difficulty'] = forms.ChoiceField(choices=Question.Difficulty.choices)

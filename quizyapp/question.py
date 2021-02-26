@@ -9,7 +9,6 @@ class QuestionList(UserList):
     def get_raw_question_list_from_opentdb_api(
         amount=3, category=9, difficulty='easy') -> List:
         
-        Category.init_category_list_from_api_if_none_available()
         category_dict = {c.id:c.name for c in Category.objects.all()}
 
         if category not in category_dict:

@@ -1,25 +1,24 @@
-from django.test import TestCase
-from quizyapp.models import Question, Answer, Category
 from hashlib import md5
-from .test_mocks import mock_default, mock_category
+
 import responses
+from django.test import TestCase
+from quizyapp.models import Answer, Category, Question
+
+from .test_mocks import mock_category, mock_default
+from quizyapp.category import init_category_list_from_api_if_none_available
+
 
 class QuestionAndAnswerRelationTests(TestCase):
     def setUp(self):
-        cat = Category(id=9, name="General Knowledge")
-        cat.save()
-        a = Answer(text="A", is_correct=True)
-        b = Answer(text="B", is_correct=False)
-        c = Answer(text="C", is_correct=False)
-        d = Answer(text="D", is_correct=False)
-        a.save()
-        b.save()
-        c.save()
-        d.save()
+        cat, created = Category.objects.get_or_create(id=9, name="General Knowledge")
+        a = Answer.objects.create(text="A", is_correct=True)
+        b = Answer.objects.create(text="B", is_correct=False)
+        c = Answer.objects.create(text="C", is_correct=False)
+        d = Answer.objects.create(text="D", is_correct=False)
 
-        q = Question(text="What is the first letter of alphabet?", category=cat, difficulty='easy')
-        q.save()
-        q.answers.add(a,b,c,d)
+        q = Question.objects.create(
+            text="What is the first letter of alphabet?", category=cat, difficulty='easy')
+        q.answers.add(a, b, c, d)
 
     def test_question_is_initialized(self):
         q = Question.objects.get(text="What is the first letter of alphabet?")
@@ -34,7 +33,7 @@ class QuestionAndAnswerRelationTests(TestCase):
             "What is the first letter of alphabet?",
             "General Knowledge",
             "easy"
-            ]).encode('utf-8')).hexdigest()
+        ]).encode('utf-8')).hexdigest()
         q = Question.objects.get(id=hash_id)
         self.assertEqual(q.text, "What is the first letter of alphabet?")
 
@@ -54,15 +53,17 @@ class QuestionAndAnswerRelationTests(TestCase):
         }
 
         q = Question.fromopentdbapiformat(raw_question)
-        self.assertEqual(q.text , 'pytanie')
+        self.assertEqual(q.text, 'pytanie')
+
 
 class CategoryModelTests(TestCase):
     @responses.activate
     def test_categories_are_properly_initiated_from_api_if_there_are_none(self):
         responses.add(**mock_category)
-        Category.init_category_list_from_api_if_none_available()
+        init_category_list_from_api_if_none_available()
         c = Category.objects.get(name="General Knowledge")
-        
+
         self.assertEqual(c.name, "General Knowledge")
         self.assertEqual(c.id, 9)
-        self.assertEqual(Category.objects.get(id=15).name, "Entertainment: Video Games")
+        self.assertEqual(Category.objects.get(id=15).name,
+                         "Entertainment: Video Games")

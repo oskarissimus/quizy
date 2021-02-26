@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.contrib.auth.models import User
 import responses
 from .test_mocks import mock_amount_2, mock_default, mock_category, mock_art_category
-
+from quizyapp.category import init_category_list_from_api_if_none_available
 
 class UnauthorisedUserViewsTests(TestCase):
     def setUp(self) -> None:
@@ -22,6 +22,8 @@ class UnauthorisedUserViewsTests(TestCase):
                 self.assertRedirects(response, f'/accounts/login/?next={path}')
 
 class QuizQuestionsViewAuthorisedUserTests(TestCase):
+    
+    @responses.activate
     def setUp(self) -> None:
         self.client = Client()
         self.path='/quiz/questions/'
@@ -29,9 +31,7 @@ class QuizQuestionsViewAuthorisedUserTests(TestCase):
             username='oskar', email='oskar@example.com', password='top_secret')
         self.client.login(username='oskar', password='top_secret')
         responses.add(**mock_category)
-        responses.add(**mock_default)
-        responses.add(**mock_amount_2)
-        responses.add(**mock_art_category)
+        init_category_list_from_api_if_none_available()
         return super().setUp()
 
     @responses.activate
@@ -41,6 +41,7 @@ class QuizQuestionsViewAuthorisedUserTests(TestCase):
 
     @responses.activate
     def test_quiz_question_amount_is_configurable_by_get_params(self):
+        responses.add(**mock_amount_2)
         params = {'amount': 2, 'category': 9, 'difficulty': 'easy'}
         response = self.client.get(path=self.path, data=params)
 
@@ -60,6 +61,7 @@ class QuizQuestionsViewAuthorisedUserTests(TestCase):
 
     @responses.activate
     def test_quiz_question_category_is_configurable_by_get_params(self):
+        responses.add(**mock_art_category)
         params = {'amount': 3, 'category': 25, 'difficulty': 'easy'}
         response = self.client.get(path=self.path, data=params)
 
@@ -76,10 +78,6 @@ class QuizParamsViewTests(TestCase):
             username='oskar', email='oskar@example.com', password='top_secret')
         self.client.login(username='oskar', password='top_secret')
         self.path='/quiz/params/'
-        responses.add(**mock_category)
-        responses.add(**mock_default)
-        responses.add(**mock_amount_2)
-        responses.add(**mock_art_category)
         return super().setUp()
 
     @responses.activate
