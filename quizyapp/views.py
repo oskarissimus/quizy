@@ -3,12 +3,13 @@ from .forms import MultipleQuestionsForm, QuizParamsForm
 from .question import QuestionList
 from django.contrib.auth.decorators import login_required
 from .models import Answer, Question, UserPoints, UserAnswer
-from django.views.generic import ListView
 from django.contrib.auth.models import User
 from rest_framework import viewsets
 from rest_framework import permissions
 from .serializers import UserPointsSerializer, UserSerializer
 from django.http import HttpResponseBadRequest
+from django.db.models import Count
+from .tables import UserAnswerTable
 
 @login_required
 def quiz_params(request):
@@ -35,7 +36,6 @@ def quiz_questions(request):
         question_id_list = []
         for question in raw_question_list:
             question_id_list.append(Question.fromopentdbapiformat(question).id)
-        print (question_id_list)
         questions_form = MultipleQuestionsForm(question_id_list=question_id_list)
 
         request.session['question_id_list'] = question_id_list
@@ -58,7 +58,6 @@ def quiz_results(request):
         points = 0
         if received_form.is_valid():
             for question_id, answer_id in received_form.cleaned_data.items():
-                #print(question_id, answer_id)
                 answer = Answer.objects.get(id=answer_id)
                 if answer.is_correct:
                     points += 1
@@ -84,10 +83,14 @@ def quiz_results(request):
     else:
         return HttpResponseBadRequest()
 
-class UserPointsView(ListView):
-    model = UserPoints
-    ordering = ('-points')
-    template_name = 'quizyapp/ranking.html'
+
+def user_points(request):
+    queryset = UserAnswer.objects.filter(answer__is_correct=True).values('user__username').annotate(points=Count('user__username')).order_by('-points')
+    table = UserAnswerTable(queryset)
+
+    return render(request, 'quizyapp/ranking.html', {
+        "table": table
+    })
 
 
 class UserPointsViewSet(viewsets.ReadOnlyModelViewSet):

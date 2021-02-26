@@ -58,10 +58,10 @@ class QuestionAndAnswerRelationTests(TestCase):
 
 class CategoryModelTests(TestCase):
     @responses.activate
-    def test_categories_are_properly_initiated_trom_api_if_there_are_none(self):
+    def test_categories_are_properly_initiated_from_api_if_there_are_none(self):
         responses.add(**mock_category)
-
-        c = Category.get_or_init_category_list_from_api(category_name="General Knowledge")
+        Category.init_category_list_from_api_if_none_available()
+        c = Category.objects.get(name="General Knowledge")
         
         self.assertEqual(c.name, "General Knowledge")
         self.assertEqual(c.id, 9)

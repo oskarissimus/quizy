@@ -4,21 +4,22 @@ import responses
 from .test_mocks import mock_amount_2, mock_default, mock_category, mock_art_category
 
 
-class QuizQuestionsViewUnauthorisedUserTests(TestCase):
+class UnauthorisedUserViewsTests(TestCase):
     def setUp(self) -> None:
         self.client = Client()
-        self.path='/quiz/questions/'
-        responses.add(**mock_category)
-        responses.add(**mock_default)
-        responses.add(**mock_amount_2)
-        responses.add(**mock_art_category)
         return super().setUp()
 
     @responses.activate
-    def test_quizy_url_returns_302_for_unauthorised_user(self):
-        response = self.client.get(path=self.path)
-        self.assertEqual(response.status_code, 302)
-
+    def test_url_redirects_to_login_for_unauthorised_user(self):
+        paths = (
+            '/quiz/params/',
+            '/quiz/questions/',
+            '/quiz/results/',
+        )
+        for path in paths:
+            with self.subTest(path=path):
+                response = self.client.get(path=path)
+                self.assertRedirects(response, f'/accounts/login/?next={path}')
 
 class QuizQuestionsViewAuthorisedUserTests(TestCase):
     def setUp(self) -> None:
@@ -81,6 +82,7 @@ class QuizParamsViewTests(TestCase):
         responses.add(**mock_art_category)
         return super().setUp()
 
+    @responses.activate
     def test_quizy_params_url_returns_200_for_authorised_user(self):
         response = self.client.get(path=self.path)
         self.assertEqual(response.status_code, 200)
