@@ -3,8 +3,9 @@ from .forms import MultipleQuestionsForm, QuizParamsForm
 from .question import QuestionList
 from django.contrib.auth.decorators import login_required
 from .models import Answer, Question, UserAnswer
-from rest_framework.decorators import api_view
-from rest_framework import response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework import permissions
 from .serializers import RankingSerializer
 from django.http import HttpResponseBadRequest
 from django.db.models import Count
@@ -92,10 +93,12 @@ def ranking(request):
     })
 
 @api_view(['GET'])
+@permission_classes((permissions.AllowAny,))
 def api_ranking(request):
+#    return Response({"message": "Hello, world!"})
     queryset = UserAnswer.objects.filter(answer__is_correct=True).values('user__username').annotate(points=Count('user__username')).order_by('-points')
     serializer = RankingSerializer(queryset, many=True)
-    return response(serializer.data)
+    return Response(serializer.data)
 
 def home(request):
     return render(request, template_name='home.html')
