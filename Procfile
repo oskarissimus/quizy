@@ -1,3 +1,2 @@
-release: python manage.py migrate
-release: python manage.py init_categories
+release: ./heroku-release-tasks.sh
 web: gunicorn quizysite.wsgi
