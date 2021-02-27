@@ -10,14 +10,17 @@ python manage.py startapp users
 python manage.py migrate
 python manage.py createsuperuser
 ```
+
 ## running
 ```
 python manage.py runserver
 http://localhost:8000/dashboard/
 ```
 
-## some links
-https://help.heroku.com/GDQ74SU2/django-migrations
+## testing
+```
+python manage.py test
+```
 
 ## coverage
 ```
@@ -25,3 +28,7 @@ coverage run manage.py test
 coverage report
 coverage html
 ```
+
+## some links
+https://help.heroku.com/GDQ74SU2/django-migrations
+
