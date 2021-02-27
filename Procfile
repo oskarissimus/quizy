@@ -1,2 +1,2 @@
-release: ./heroku-release-tasks.sh
+release: bash heroku-release-tasks.sh
 web: gunicorn quizysite.wsgi
