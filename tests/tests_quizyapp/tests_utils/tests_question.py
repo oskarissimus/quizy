@@ -4,7 +4,7 @@ from ..test_mocks import mock_default, mock_category, raw_question_list
 import responses
 from quizyapp.utils.category import init_category_list_from_api_if_none_available
 
-class QuestionListTests(TestCase):
+class QuestionUtilsTests(TestCase):
 
     @responses.activate
     def test_retreiving_data_from_opentdb_api(self):
