@@ -8,25 +8,24 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
 from .forms import MultipleQuestionsForm, QuizParamsForm
-from .models import Answer, Question, UserAnswer, Category
-from .question import QuestionList
+from .models import Answer, Category, Question, UserAnswer
 from .serializers import RankingSerializer
 from .tables import UserAnswerTable
+from .utils.answer import get_or_create_answer_objects_from_opentdb_format
+from .utils.question import get_raw_question_list_from_opentdb_api
 
 
 @login_required
 @require_GET
 def quiz_params(request):
-    choices = [(c.id,c.name) for c in Category.objects.all()]
-    form = QuizParamsForm(choices)
+    form = QuizParamsForm()
     return render(request, context={'form': form}, template_name='quizyapp/quiz_params.html')
 
 
 @login_required
 @require_GET
 def quiz_questions(request):
-    choices = [(c.id,c.name) for c in Category.objects.all()]
-    params_form = QuizParamsForm(choices, request.GET)
+    params_form = QuizParamsForm(request.GET)
     if params_form.is_valid():
         amount = params_form.cleaned_data['amount']
         category = params_form.cleaned_data['category']
@@ -34,11 +33,17 @@ def quiz_questions(request):
     else:
         return HttpResponseBadRequest('Cannot generate quiz with provided parameters')
 
-    raw_question_list = QuestionList.get_raw_question_list_from_opentdb_api(
+    raw_question_list = get_raw_question_list_from_opentdb_api(
         amount=amount, category=category, difficulty=difficulty)
     question_id_list = []
-    for question in raw_question_list:
-        question_id_list.append(Question.fromopentdbapiformat(question).id)
+
+    for raw_question in raw_question_list:
+        category = Category.objects.get(name=raw_question['category'])
+        question = Question.fromopentdbformat(raw_question, category)
+        question.save()
+        answers = get_or_create_answer_objects_from_opentdb_format(raw_question, question)
+        question_id_list.append(question.id)
+
     questions_form = MultipleQuestionsForm(question_id_list=question_id_list)
 
     request.session['question_id_list'] = question_id_list
@@ -66,7 +71,7 @@ def quiz_results(request):
             quiz_summary.append({
                 'question': question.text,
                 'provided_answer': answer.text,
-                'correct_answer': question.answers.get(is_correct=True).text,
+                'correct_answer': Answer.objects.filter(question=question,is_correct=True).values('text')[0]['text'],
                 'is_correct': answer.is_correct
             })
             UserAnswer.objects.create(

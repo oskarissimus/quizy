@@ -1,5 +1,5 @@
 
-from .models import Category
+from ..models import Category
 import requests
 
 def init_category_list_from_api_if_none_available():

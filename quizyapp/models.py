@@ -1,7 +1,5 @@
 from hashlib import md5
 from html import unescape
-
-import requests
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.fields.related import ForeignKey
@@ -15,23 +13,8 @@ class Category(models.Model):
         return f'id: {self.id}, name: {self.name}'
 
 
-class Answer(models.Model):
-    id = models.CharField(max_length=32, unique=True, primary_key=True)
-    text = models.TextField()
-    is_correct = models.BooleanField()
-
-    def save(self, **kwargs):
-        self.id = md5(''.join([self.text, str(self.is_correct)]).encode(
-            'utf-8')).hexdigest()
-        super().save(**kwargs)
-
-    def __str__(self):
-        return f'id: {self.id}, text: {self.text}, is_correct: {self.is_correct}'
-
-
 class Question(models.Model):
     id = models.CharField(max_length=32, unique=True, primary_key=True)
-    answers = models.ManyToManyField(Answer)
     text = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.PROTECT)
 
@@ -44,31 +27,21 @@ class Question(models.Model):
         super().save(**kwargs)
 
     @classmethod
-    def fromopentdbapiformat(cls, question_json):
+    def fromopentdbformat(cls, raw_question, category):
+        text = unescape(raw_question['question'])
+        difficulty = raw_question['difficulty']
+        return cls(text=text, category=category, difficulty=difficulty)
 
-        category = Category.objects.get(name=question_json['category'])
 
-        correct_answer = Answer(text=unescape(
-            question_json['correct_answer']), is_correct=True)
-        correct_answer.save()
-        incorrect_answers = []
-        for incorrect_answer_text in question_json['incorrect_answers']:
-            incorrect_answer = Answer(text=unescape(
-                incorrect_answer_text), is_correct=False)
-            incorrect_answer.save()
-            incorrect_answers.append(incorrect_answer)
+class Answer(models.Model):
+    class Meta:
+        unique_together = ['question','text']
+    text = models.TextField()
+    is_correct = models.BooleanField()
+    question = models.ForeignKey(Question, on_delete=models.PROTECT)
 
-        c = cls(
-            text=unescape(question_json['question']),
-            category=category,
-            difficulty=question_json['difficulty']
-        )
-        c.save()
-        c.answers.add(correct_answer, *incorrect_answers)
-        return c
-
-    def get_answers_as_choice_field_choices(self):
-        return [(a.id, a.text) for a in self.answers.all()]
+    def __str__(self):
+        return f'text: {self.text}, is_correct: {self.is_correct}'
 
 
 class UserAnswer(models.Model):

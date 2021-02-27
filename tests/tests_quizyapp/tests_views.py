@@ -1,8 +1,11 @@
-from django.test import TestCase, Client
-from django.contrib.auth.models import User
 import responses
-from .test_mocks import mock_amount_2, mock_default, mock_category, mock_art_category
-from quizyapp.category import init_category_list_from_api_if_none_available
+from django.contrib.auth.models import User
+from django.test import Client, TestCase
+from quizyapp.utils.category import init_category_list_from_api_if_none_available
+
+from .test_mocks import (mock_amount_2, mock_art_category, mock_category,
+                         mock_default)
+
 
 class UnauthorisedUserViewsTests(TestCase):
     def setUp(self) -> None:
@@ -21,12 +24,13 @@ class UnauthorisedUserViewsTests(TestCase):
                 response = self.client.get(path=path)
                 self.assertRedirects(response, f'/accounts/login/?next={path}')
 
+
 class QuizQuestionsViewAuthorisedUserTests(TestCase):
-    
+
     @responses.activate
     def setUp(self) -> None:
         self.client = Client()
-        self.path='/quiz/questions/'
+        self.path = '/quiz/questions/'
         self.user = User.objects.create_user(
             username='oskar', email='oskar@example.com', password='top_secret')
         self.client.login(username='oskar', password='top_secret')
@@ -77,7 +81,7 @@ class QuizParamsViewTests(TestCase):
         self.user = User.objects.create_user(
             username='oskar', email='oskar@example.com', password='top_secret')
         self.client.login(username='oskar', password='top_secret')
-        self.path='/quiz/params/'
+        self.path = '/quiz/params/'
         return super().setUp()
 
     @responses.activate

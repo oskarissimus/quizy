@@ -2,31 +2,40 @@ from hashlib import md5
 
 import responses
 from django.test import TestCase
+from six import assertRaisesRegex
 from quizyapp.models import Answer, Category, Question
 
 from .test_mocks import mock_category, mock_default
-from quizyapp.category import init_category_list_from_api_if_none_available
+from quizyapp.utils.category import init_category_list_from_api_if_none_available
+from django.db.utils import IntegrityError
 
 
-class QuestionAndAnswerRelationTests(TestCase):
+class CategoryTests(TestCase):
+    @responses.activate
+    def test_categories_are_properly_initiated_from_api_if_there_are_none(self):
+        responses.add(**mock_category)
+        init_category_list_from_api_if_none_available()
+        c = Category.objects.get(name="General Knowledge")
+
+        self.assertEqual(c.name, "General Knowledge")
+        self.assertEqual(c.id, 9)
+        self.assertEqual(Category.objects.get(id=15).name,
+                         "Entertainment: Video Games")
+
+
+class QuestionTests(TestCase):
+    @responses.activate
     def setUp(self):
-        cat, created = Category.objects.get_or_create(id=9, name="General Knowledge")
-        a = Answer.objects.create(text="A", is_correct=True)
-        b = Answer.objects.create(text="B", is_correct=False)
-        c = Answer.objects.create(text="C", is_correct=False)
-        d = Answer.objects.create(text="D", is_correct=False)
-
+        responses.add(**mock_category)
+        init_category_list_from_api_if_none_available()
+        cat = Category.objects.get(
+            id=9, name="General Knowledge")
         q = Question.objects.create(
             text="What is the first letter of alphabet?", category=cat, difficulty='easy')
-        q.answers.add(a, b, c, d)
 
     def test_question_is_initialized(self):
         q = Question.objects.get(text="What is the first letter of alphabet?")
         self.assertEqual(q.text, "What is the first letter of alphabet?")
-
-    def test_answers_are_initialized(self):
-        q = Question.objects.get(text="What is the first letter of alphabet?")
-        self.assertEqual(q.answers.get(text='A').text, 'A')
 
     def test_if_id_is_properly_initiated(self):
         hash_id = md5(''.join([
@@ -39,7 +48,6 @@ class QuestionAndAnswerRelationTests(TestCase):
 
     @responses.activate
     def test_question_is_properly_initialized_from_opentdb_api_format(self):
-        responses.add(**mock_category)
         raw_question = {
             "category": "General Knowledge",
             "type": "multiple",
@@ -52,18 +60,50 @@ class QuestionAndAnswerRelationTests(TestCase):
             ]
         }
 
-        q = Question.fromopentdbapiformat(raw_question)
+        category = Category.objects.get(name='General Knowledge')
+        q = Question.fromopentdbformat(raw_question, category)
         self.assertEqual(q.text, 'pytanie')
 
+    def test_question_cannot_be_duplicated(self):
+        cat = Category.objects.get(
+            id=9, name="General Knowledge")
+        with self.assertRaises(IntegrityError):
+            Question.objects.create(
+                text="What is the first letter of alphabet?", category=cat, difficulty='easy')
 
-class CategoryModelTests(TestCase):
+
+class AnswerTests(TestCase):
     @responses.activate
-    def test_categories_are_properly_initiated_from_api_if_there_are_none(self):
+    def setUp(self):
         responses.add(**mock_category)
         init_category_list_from_api_if_none_available()
-        c = Category.objects.get(name="General Knowledge")
+        cat = Category.objects.get(
+            id=9, name="General Knowledge")
+        q = Question.objects.create(
+            text="What is the first letter of alphabet?", category=cat, difficulty='easy')
+        Answer.objects.create(question=q, text="A", is_correct=True)
+        Answer.objects.create(question=q, text="B", is_correct=False)
+        Answer.objects.create(question=q, text="C", is_correct=False)
+        Answer.objects.create(question=q, text="D", is_correct=False)
+        return super().setUp()
 
-        self.assertEqual(c.name, "General Knowledge")
-        self.assertEqual(c.id, 9)
-        self.assertEqual(Category.objects.get(id=15).name,
-                         "Entertainment: Video Games")
+    def test_answers_are_initialized(self):
+        answers = Answer.objects.filter(
+            question__text="What is the first letter of alphabet?").order_by('text').values_list('text', 'is_correct')
+        expected_answers = (
+            ('A', True),
+            ('B', False),
+            ('C', False),
+            ('D', False),
+        )
+        self.assertQuerysetEqual(answers, [repr(r) for r in expected_answers])
+
+    def test_answer_cannot_be_duplicated(self):
+        q = Question.objects.get(
+            text="What is the first letter of alphabet?")
+        with self.assertRaises(IntegrityError):
+            Answer.objects.create(question=q, text="A", is_correct=True)
+
+
+class UserAnswerTests(TestCase):
+    pass
