@@ -4,9 +4,6 @@ from quizyapp.utils.answer import get_or_create_answer_objects_from_opentdb_form
 
 
 class AnswerUtilsTests(TestCase):
-    def setUp(self) -> None:
-
-        return super().setUp()
 
     def test_creating_answers_by_utility_function_works(self):
         raw_question = {
@@ -20,7 +17,7 @@ class AnswerUtilsTests(TestCase):
                 "C"
             ]
         }
-        cat = Category.objects.create(id=9,name=raw_question['category'])
+        cat = Category.objects.create(id=9, name=raw_question['category'])
         text = raw_question['question']
         difficulty = raw_question['difficulty']
         question = Question.objects.create(
@@ -29,11 +26,12 @@ class AnswerUtilsTests(TestCase):
         get_or_create_answer_objects_from_opentdb_format(
             raw_question=raw_question, question=question)
 
-        self.assertEqual(Answer.objects.filter(question=question).count(),3)
-        answers = Answer.objects.filter(question=question).order_by('text').values_list('text','is_correct')
+        self.assertEqual(Answer.objects.filter(question=question).count(), 3)
+        answers = Answer.objects.filter(question=question).order_by(
+            'text').values_list('text', 'is_correct')
         expected_answers = (
-            ('A',True),
-            ('B',False),
-            ('C',False),
+            ('A', True),
+            ('B', False),
+            ('C', False),
         )
-        self.assertQuerysetEqual(answers,[repr(r) for r in expected_answers])
+        self.assertQuerysetEqual(answers, [repr(r) for r in expected_answers])

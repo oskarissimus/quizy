@@ -2,25 +2,11 @@ from hashlib import md5
 
 import responses
 from django.test import TestCase
-from six import assertRaisesRegex
 from quizyapp.models import Answer, Category, Question
 
 from .test_mocks import mock_category, mock_default
 from quizyapp.utils.category import init_category_list_from_api_if_none_available
 from django.db.utils import IntegrityError
-
-
-class CategoryTests(TestCase):
-    @responses.activate
-    def test_categories_are_properly_initiated_from_api_if_there_are_none(self):
-        responses.add(**mock_category)
-        init_category_list_from_api_if_none_available()
-        c = Category.objects.get(name="General Knowledge")
-
-        self.assertEqual(c.name, "General Knowledge")
-        self.assertEqual(c.id, 9)
-        self.assertEqual(Category.objects.get(id=15).name,
-                         "Entertainment: Video Games")
 
 
 class QuestionTests(TestCase):
