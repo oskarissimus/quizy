@@ -8,3 +8,4 @@ django-heroku
 djangorestframework
 coverage
 python-dotenv
+pyyaml

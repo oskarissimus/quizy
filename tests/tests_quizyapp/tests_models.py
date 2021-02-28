@@ -1,8 +1,10 @@
 from hashlib import md5
+from django.contrib.auth.models import User
+from django.db.models.query import QuerySet
 
 import responses
 from django.test import TestCase
-from quizyapp.models import Answer, Category, Question
+from quizyapp.models import Answer, Category, Question, UserAnswer
 
 from .test_mocks import mock_category, mock_default
 from quizyapp.utils.category import init_category_list_from_api_if_none_available
@@ -92,4 +94,23 @@ class AnswerTests(TestCase):
 
 
 class UserAnswerTests(TestCase):
-    pass
+    fixtures = ['category', 'question', 'answer', 'user', 'useranswer']
+
+    def setUp(self):
+        self.user = User.objects.get(id=1)
+
+    def test_user_answer_is_properly_initiated(self):
+        question = Question.objects.get(id='50b84e54aff20b91e2e085c76dc91928')
+        answer = Answer.objects.get(id=9)
+        user_answer = UserAnswer.objects.create(user=self.user, question=question, answer=answer)
+
+        self.assertEqual(user_answer.user.username,'q')
+        self.assertEqual(user_answer.answer.text,'True')
+        self.assertEqual(user_answer.question.text,'The mitochondria is the powerhouse of the cell.')
+
+    def test_get_points_for_user_returns_proper_value(self):
+        self.assertEqual(UserAnswer.get_points_for_user(self.user),2)
+
+    def test_get_all_answers_no_for_user_returns_proper_value(self):
+        self.assertEqual(UserAnswer.get_all_answers_no_for_user(self.user),3)
+
