@@ -1,0 +1,18 @@
+- model: quizyapp.question
+  pk: 50b84e54aff20b91e2e085c76dc91928
+  fields:
+    text: The mitochondria is the powerhouse of the cell.
+    category: 9
+    difficulty: easy
+- model: quizyapp.question
+  pk: b1fa926290c710238a167024ccf9d167
+  fields:
+    text: What is the closest planet to our solar system's sun?
+    category: 9
+    difficulty: easy
+- model: quizyapp.question
+  pk: ba1740cd9cb4ed8ec17b3ac3cb381e4d
+  fields:
+    text: Which of these colours is NOT featured in the logo for Google?
+    category: 9
+    difficulty: easy

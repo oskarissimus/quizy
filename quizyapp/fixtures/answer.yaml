@@ -1,0 +1,60 @@
+- model: quizyapp.answer
+  pk: 1
+  fields:
+    text: Pink
+    is_correct: true
+    question: ba1740cd9cb4ed8ec17b3ac3cb381e4d
+- model: quizyapp.answer
+  pk: 2
+  fields:
+    text: Yellow
+    is_correct: false
+    question: ba1740cd9cb4ed8ec17b3ac3cb381e4d
+- model: quizyapp.answer
+  pk: 3
+  fields:
+    text: Blue
+    is_correct: false
+    question: ba1740cd9cb4ed8ec17b3ac3cb381e4d
+- model: quizyapp.answer
+  pk: 4
+  fields:
+    text: Green
+    is_correct: false
+    question: ba1740cd9cb4ed8ec17b3ac3cb381e4d
+- model: quizyapp.answer
+  pk: 5
+  fields:
+    text: Mercury
+    is_correct: true
+    question: b1fa926290c710238a167024ccf9d167
+- model: quizyapp.answer
+  pk: 6
+  fields:
+    text: Mars
+    is_correct: false
+    question: b1fa926290c710238a167024ccf9d167
+- model: quizyapp.answer
+  pk: 7
+  fields:
+    text: Jupiter
+    is_correct: false
+    question: b1fa926290c710238a167024ccf9d167
+- model: quizyapp.answer
+  pk: 8
+  fields:
+    text: Earth
+    is_correct: false
+    question: b1fa926290c710238a167024ccf9d167
+- model: quizyapp.answer
+  pk: 9
+  fields:
+    text: 'True'
+    is_correct: true
+    question: 50b84e54aff20b91e2e085c76dc91928
+- model: quizyapp.answer
+  pk: 10
+  fields:
+    text: 'False'
+    is_correct: false
+    question: 50b84e54aff20b91e2e085c76dc91928

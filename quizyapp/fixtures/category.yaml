@@ -1,0 +1,96 @@
+- model: quizyapp.category
+  pk: 9
+  fields:
+    name: General Knowledge
+- model: quizyapp.category
+  pk: 10
+  fields:
+    name: 'Entertainment: Books'
+- model: quizyapp.category
+  pk: 11
+  fields:
+    name: 'Entertainment: Film'
+- model: quizyapp.category
+  pk: 12
+  fields:
+    name: 'Entertainment: Music'
+- model: quizyapp.category
+  pk: 13
+  fields:
+    name: 'Entertainment: Musicals & Theatres'
+- model: quizyapp.category
+  pk: 14
+  fields:
+    name: 'Entertainment: Television'
+- model: quizyapp.category
+  pk: 15
+  fields:
+    name: 'Entertainment: Video Games'
+- model: quizyapp.category
+  pk: 16
+  fields:
+    name: 'Entertainment: Board Games'
+- model: quizyapp.category
+  pk: 17
+  fields:
+    name: Science & Nature
+- model: quizyapp.category
+  pk: 18
+  fields:
+    name: 'Science: Computers'
+- model: quizyapp.category
+  pk: 19
+  fields:
+    name: 'Science: Mathematics'
+- model: quizyapp.category
+  pk: 20
+  fields:
+    name: Mythology
+- model: quizyapp.category
+  pk: 21
+  fields:
+    name: Sports
+- model: quizyapp.category
+  pk: 22
+  fields:
+    name: Geography
+- model: quizyapp.category
+  pk: 23
+  fields:
+    name: History
+- model: quizyapp.category
+  pk: 24
+  fields:
+    name: Politics
+- model: quizyapp.category
+  pk: 25
+  fields:
+    name: Art
+- model: quizyapp.category
+  pk: 26
+  fields:
+    name: Celebrities
+- model: quizyapp.category
+  pk: 27
+  fields:
+    name: Animals
+- model: quizyapp.category
+  pk: 28
+  fields:
+    name: Vehicles
+- model: quizyapp.category
+  pk: 29
+  fields:
+    name: 'Entertainment: Comics'
+- model: quizyapp.category
+  pk: 30
+  fields:
+    name: 'Science: Gadgets'
+- model: quizyapp.category
+  pk: 31
+  fields:
+    name: 'Entertainment: Japanese Anime & Manga'
+- model: quizyapp.category
+  pk: 32
+  fields:
+    name: 'Entertainment: Cartoon & Animations'

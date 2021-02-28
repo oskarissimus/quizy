@@ -1,0 +1,11 @@
+django
+requests
+responses
+django-bootstrap4
+django-tables2
+gunicorn
+django-heroku
+djangorestframework
+coverage
+python-dotenv
+pyyaml

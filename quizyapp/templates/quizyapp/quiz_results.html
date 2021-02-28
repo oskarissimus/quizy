@@ -1,0 +1,24 @@
+
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block content %}
+
+<h2>Results</h2>
+<hr>
+<p>You scored: {{ points }}</p>
+<p>Your total points: {{ total_points }}</p>
+<hr>
+{% for question_summary in quiz_summary %}
+  {% if question_summary.is_correct %}
+    <div class="alert alert-success" role="alert">
+  {% else %}
+    <div class="alert alert-danger" role="alert">
+  {% endif %}
+    <p>Question: {{ question_summary.question }}</p>
+    <p>Provided answer: {{ question_summary.provided_answer }}</p>
+    <p>Correct answer: {{ question_summary.correct_answer }}</p>
+  </div>
+{% endfor %}
+
+
+{% endblock %}

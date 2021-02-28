@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+<h1>Aplikacja quizy</h1>
+<p>Dostępne funkcjonalności:</p>
+<p>Dla wszystkich użytkowników</p>
+    <ul>
+        <li>
+            Rejestracja
+        </li>
+        <li>
+            Przeglądanie rankingu <code>{{ request.get_host }}/ranking/</code>
+        </li>
+        <li>
+            Pobieranie rankingu przez api <code>{{ request.get_host }}/api/ranking/</code>
+        </li>
+    </ul>
+<p>Dla zalogowanych użytkowników</p>
+    <ul>
+        <li>
+            Logowanie
+        </li>
+        <li>
+            Rozwiązywanie quizów 
+        </li>
+    </ul>
+{% endblock %}
