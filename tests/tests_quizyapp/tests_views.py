@@ -25,7 +25,7 @@ class UnauthorisedUserViewsTests(TestCase):
                 self.assertRedirects(response, f'/accounts/login/?next={path}')
 
 
-class QuizQuestionsViewAuthorisedUserTests(TestCase):
+class QuizQuestionsViewTests(TestCase):
 
     @responses.activate
     def setUp(self) -> None:
@@ -34,8 +34,7 @@ class QuizQuestionsViewAuthorisedUserTests(TestCase):
         self.user = User.objects.create_user(
             username='oskar', email='oskar@example.com', password='top_secret')
         self.client.login(username='oskar', password='top_secret')
-        responses.add(**mock_category)
-        init_category_list_from_api_if_none_available()
+
         return super().setUp()
 
     @responses.activate
