@@ -98,6 +98,7 @@ class UserAnswerTests(TestCase):
 
     def setUp(self):
         self.user = User.objects.get(id=1)
+        return super().setUp()
 
     def test_user_answer_is_properly_initiated(self):
         question = Question.objects.get(id='50b84e54aff20b91e2e085c76dc91928')
