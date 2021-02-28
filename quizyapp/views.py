@@ -55,7 +55,11 @@ def quiz_questions(request):
 @login_required
 @require_POST
 def quiz_results(request):
-    question_id_list = request.session['question_id_list']
+    if 'question_id_list' in request.session:
+        question_id_list = request.session['question_id_list']
+    else:
+        return HttpResponseBadRequest('No answers provided')
+    
     received_form = MultipleQuestionsForm(question_id_list, request.POST)
 
     provided_answers = {}
