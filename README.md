@@ -1,8 +1,8 @@
-# quizy
+# Quizy
 
 https://realpython.com/django-user-management/#set-up-a-django-project
 
-## setup
+## Setup
 ```
 django-admin startproject quizysite
 cd quizysite
@@ -11,28 +11,25 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
-## running
+## Running
 ```
 python manage.py runserver
 http://localhost:8000/dashboard/
 ```
 
-## testing
+## Testing
 ```
 python manage.py test
 ```
 
-## coverage
+## Coverage
 ```
 coverage run manage.py test
 coverage report
 coverage html
 ```
 
-## some links
-https://help.heroku.com/GDQ74SU2/django-migrations
-
-## creating fixtures
+## Creating fixtures
 https://docs.djangoproject.com/en/3.1/howto/initial-data/
 ```
 pip install pyyaml
@@ -42,3 +39,6 @@ python manage.py dumpdata --format=yaml -o quizyapp/fixtures/category.yaml quizy
 python manage.py dumpdata --format=yaml -o quizyapp/fixtures/useranswer.yaml quizyapp.useranswer
 python manage.py dumpdata --format=yaml -o quizyapp/fixtures/user.yaml auth.user
 ```
+
+## Some links
+https://help.heroku.com/GDQ74SU2/django-migrations
