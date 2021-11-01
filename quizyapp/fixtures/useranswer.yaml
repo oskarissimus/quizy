@@ -1,0 +1,21 @@
+- model: quizyapp.useranswer
+  pk: 1
+  fields:
+    user: 1
+    question: 50b84e54aff20b91e2e085c76dc91928
+    answer: 9
+    date_time: 2021-02-27 23:40:39.824462+00:00
+- model: quizyapp.useranswer
+  pk: 2
+  fields:
+    user: 1
+    question: b1fa926290c710238a167024ccf9d167
+    answer: 8
+    date_time: 2021-02-27 23:40:39.833667+00:00
+- model: quizyapp.useranswer
+  pk: 3
+  fields:
+    user: 1
+    question: ba1740cd9cb4ed8ec17b3ac3cb381e4d
+    answer: 1
+    date_time: 2021-02-27 23:40:39.841006+00:00
